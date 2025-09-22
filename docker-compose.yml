@@ -1,0 +1,156 @@
+version: '3.8'
+
+services:
+  brandchecker-n8n:
+    image: n8nio/n8n:latest
+    container_name: brandchecker-n8n
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5680:5678"  # Bind to IPv4 only, using port 5680 to avoid conflict
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=brandchecker123
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://brandchecker-n8n:5678/
+      - GENERIC_TIMEZONE=Europe/Berlin
+      - NODE_OPTIONS=--dns-result-order=ipv4first
+      - N8N_DISABLE_IPV6=true
+    volumes:
+      - brandchecker_n8n_data:/home/node/.n8n
+      - ./shared:/shared
+    networks:
+      - brandchecker_network
+
+  brandchecker-postgres:
+    image: pgvector/pgvector:pg15
+    container_name: brandchecker-postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5433:5432"  # Bind to IPv4 only, using port 5433 to avoid conflict with existing PostgreSQL
+    environment:
+      - POSTGRES_DB=brandchecker
+      - POSTGRES_USER=brandchecker_user
+      - POSTGRES_PASSWORD=brandchecker_password
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - brandchecker_postgres_data:/var/lib/postgresql/data
+      - ./postgres_init:/docker-entrypoint-initdb.d
+    networks:
+      - brandchecker_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U brandchecker_user -d brandchecker"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  brandchecker-python:
+    image: python:3.11-slim
+    container_name: brandchecker-python
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"  # Bind to IPv4 only
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://brandchecker_user:brandchecker_password@brandchecker-postgres:5432/brandchecker
+      - POSTGRES_HOST=brandchecker-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=brandchecker
+      - POSTGRES_USER=brandchecker_user
+      - POSTGRES_PASSWORD=brandchecker_password
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    volumes:
+      - ./python_app:/app
+      - ./shared:/shared
+    working_dir: /app
+    command: >
+      sh -c "apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 libpq-dev gcc && 
+             pip install PyMuPDF opencv-python-headless Pillow pdfplumber scikit-learn numpy requests flask pypdf pikepdf pdfrw psycopg2-binary sqlalchemy alembic openai &&
+             python app.py"
+    networks:
+      - brandchecker_network
+    depends_on:
+      brandchecker-postgres:
+        condition: service_healthy
+
+  color-profile-service:
+    build: ./color-profile-service
+    container_name: brandchecker-color-profile-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+    ports:
+      - "127.0.0.1:8082:8080"  # expose on local 8082
+    volumes:
+      - ./shared:/shared:ro
+    networks:
+      - brandchecker_network
+
+  font-profile-service:
+    build: ./font-profile-service
+    container_name: brandchecker-font-profile-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+    volumes:
+      - ./shared:/shared:ro
+    networks:
+      - brandchecker_network
+
+  logo-profile-service:
+    build: ./logo-profile-service
+    container_name: brandchecker-logo-profile-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+    volumes:
+      - ./shared:/shared
+      # mount brandchecker python_app for intelligent detector reuse
+      - ./python_app:/brandchecker_app:ro
+    networks:
+      - brandchecker_network
+
+  image-profile-service:
+    build: ./image-profile-service
+    container_name: brandchecker-image-profile-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+    ports:
+      - "127.0.0.1:8085:8080"  # expose on local 8085
+    volumes:
+      - ./shared:/shared
+    networks:
+      - brandchecker_network
+
+  pdf-measure-service:
+    build: ./pdf-measure-service
+    container_name: brandchecker-pdf-measure-service
+    restart: unless-stopped
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - MEASURE_OUT_DIR=/shared/measurements
+    ports:
+      - "127.0.0.1:8086:8080"  # expose on local 8086
+    volumes:
+      - ./shared:/shared
+    networks:
+      - brandchecker_network
+
+volumes:
+  brandchecker_n8n_data:
+    driver: local
+  brandchecker_postgres_data:
+    driver: local
+
+networks:
+  brandchecker_network:
+    driver: bridge 

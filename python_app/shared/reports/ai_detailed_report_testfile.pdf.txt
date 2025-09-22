@@ -1,0 +1,208 @@
+================================================================================
+AI GRAPHICS ANALYSIS REPORT
+================================================================================
+
+EXECUTIVE SUMMARY
+----------------------------------------
+Total Graphics Detected: 7
+High Confidence Regions: 0
+Medium Confidence Regions: 2
+Low Confidence Regions: 5
+
+AI ANALYSIS SUMMARY
+----------------------------------------
+Graphic Types Found:
+  - Icon: 1
+  - Other: 2
+  - Logo: 2
+  - Unknown: 1
+  - Illustration: 1
+
+Brands/Companies Identified:
+  - Bosch
+
+Quality Distribution:
+  - High: 6
+  - Unknown: 1
+
+DETAILED GRAPHICS ANALYSIS
+========================================
+
+GRAPHIC #1
+--------------------
+Page: 1
+Position: (1103, 90)
+Size: 39 x 46 pixels
+Area: 1234.5 pixels²
+Detection Method: edge_based
+Detection Confidence: 60.0%
+
+AI Analysis:
+  Graphic Type: Icon
+  Content: An icon of a bold red letter 'H' on a white background.
+  Colors: red, white
+  Quality: High
+  AI Confidence: 90.0%
+  Overall Score: 75.0%
+
+Recommendation Reasons:
+  - Detected through edge analysis
+  - Recognized brand: null
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #2
+--------------------
+Page: 1
+Position: (770, 183)
+Size: 89 x 117 pixels
+Area: 6612.0 pixels²
+Detection Method: texture_based
+Detection Confidence: 50.0%
+
+AI Analysis:
+  Graphic Type: Other
+  Content: The image is completely blank with no visible content.
+  Colors: 
+  Quality: High
+  AI Confidence: 100.0%
+  Overall Score: 75.0%
+
+Recommendation Reasons:
+  - Detected through texture analysis
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #3
+--------------------
+Page: 1
+Position: (595, 841)
+Size: 714 x 1011 pixels
+Area: 721854 pixels²
+Detection Method: position_based
+Detection Confidence: 40.0%
+
+AI Analysis:
+  Graphic Type: Other
+  Content: The image is blank with a white background and no visible content.
+  Colors: white
+  Quality: High
+  AI Confidence: 95.0%
+  Overall Score: 67.5%
+
+Recommendation Reasons:
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #4
+--------------------
+Page: 1
+Position: (982, 252)
+Size: 298 x 505 pixels
+Area: 150490 pixels²
+Detection Method: position_based
+Detection Confidence: 30.0%
+
+AI Analysis:
+  Graphic Type: Logo
+  Content: The graphic is a logo featuring a circular emblem on the left, with a white 'H' inside a black outline resembling an electric motor part. To the right of the emblem, the word 'BOSCH' is written in bold red letters.
+  Colors: black, red, white
+  Brand/Company: Bosch
+  Quality: High
+  AI Confidence: 100.0%
+  Overall Score: 65.0%
+
+Recommendation Reasons:
+  - AI identified as logo
+  - Recognized brand: Bosch
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #5
+--------------------
+Page: 1
+Position: (595, 168)
+Size: 476 x 336 pixels
+Area: 159936 pixels²
+Detection Method: position_based
+Detection Confidence: 0.0%
+
+AI Analysis:
+  Graphic Type: Logo
+  Content: An elegant black and white abstract logo featuring an overlapping Venn diagram style with circular shapes.
+  Colors: black, white
+  Quality: High
+  AI Confidence: 95.0%
+  Overall Score: 47.5%
+
+Recommendation Reasons:
+  - AI identified as logo
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #6
+--------------------
+Page: 1
+Position: (595, 1515)
+Size: 714 x 337 pixels
+Area: 240618 pixels²
+Detection Method: position_based
+Detection Confidence: 0.0%
+
+AI Analysis:
+  Graphic Type: Illustration
+  Content: The graphic is a simple, playful illustration of a fried egg. The yolk is centered and bright yellow, with a smooth shading to indicate texture. The white part of the egg is depicted as an irregular shape surrounding the yolk.
+  Colors: yellow, white
+  Quality: High
+  AI Confidence: 90.0%
+  Overall Score: 45.0%
+
+Recommendation Reasons:
+  - AI identified as illustration
+  - High quality graphic
+
+----------------------------------------
+
+GRAPHIC #7
+--------------------
+Page: 1
+Position: (178, 252)
+Size: 357 x 505 pixels
+Area: 180285 pixels²
+Detection Method: position_based
+Detection Confidence: 20.0%
+
+AI Analysis:
+  Graphic Type: Unknown
+  Content: I'm sorry, but I'm unable to see any content in the image you uploaded. It appears to be blank or not displaying properly. If you have another image or need help with something specific, feel free to share!
+  Colors: 
+  Quality: Unknown
+  AI Confidence: 50.0%
+  Overall Score: 35.0%
+
+----------------------------------------
+
+DETECTION METHODS USED
+----------------------------------------
+  - Edge Based: 1
+  - Texture Based: 1
+  - Position Based: 5
+
+CONCLUSION
+----------------------------------------
+This report provides a comprehensive analysis of all graphics
+found in the PDF document, using advanced AI vision analysis
+to identify logos, illustrations, icons, and other visual elements.
+
+The AI analysis provides detailed insights into:
+  - Graphic types and classifications
+  - Brand and company identification
+  - Color analysis and visual characteristics
+  - Quality assessment and confidence scores
+
+================================================================================

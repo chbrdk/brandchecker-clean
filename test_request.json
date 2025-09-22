@@ -1,0 +1,42 @@
+{
+  "filepath": "/shared/testfile3.pdf",
+  "report": {
+    "filepath": "/shared/testfile3.pdf",
+    "report": {
+      "pages": [
+        {
+          "page_number": 2,
+          "boxes": [
+            {
+              "type": "image_block",
+              "bbox_pt": [43.64, 61.94, 1146.5, 379.63]
+            },
+            {
+              "type": "text_block",
+              "bbox_pt": [44.65, 18.55, 230.36, 28.64]
+            }
+          ],
+          "issues": [
+            {
+              "type": "collision_overlap",
+              "severity": "error",
+              "between": [
+                {
+                  "type": "text_block",
+                  "bbox_pt": [297.64, 434.2, 553.3, 539.31]
+                },
+                {
+                  "type": "image_block",
+                  "bbox_pt": [370.35, 465.56, 371.69, 466.82]
+                }
+              ],
+              "description": "Boxes overlap"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "box_stroke": 1.0,
+  "issue_font_size": 8.0
+}
