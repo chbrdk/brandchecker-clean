@@ -1,0 +1,18 @@
+{
+  "total_images": 471,
+  "total_metadata_entries": 671,
+  "categories": {
+    "logos": 0,
+    "avatars": 64,
+    "brand_assets": 2,
+    "frontify_cdn": 605,
+    "other": 0
+  },
+  "domains": {
+    "brandguide.bosch.com": 64,
+    "brandguide-bosch-test.frontify.com": 64,
+    "cdn-assets-eu.frontify.com": 541,
+    "s3.eu-central-1.amazonaws.com": 2
+  },
+  "extraction_timestamp": "2025-09-24T06:31:15.134983"
+}

@@ -1,9 +1,5 @@
 version: '3.8'
 
-# Load environment variables from .env file
-env_file:
-  - .env
-
 services:
   brandchecker-n8n:
     image: n8nio/n8n:latest
@@ -23,6 +19,14 @@ services:
       - GENERIC_TIMEZONE=Europe/Berlin
       - NODE_OPTIONS=--dns-result-order=ipv4first
       - N8N_DISABLE_IPV6=true
+      # PostgreSQL Database Configuration
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=brandchecker-postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=brandchecker
+      - DB_POSTGRESDB_USER=brandchecker_user
+      - DB_POSTGRESDB_PASSWORD=brandchecker_password
+      - DB_POSTGRESDB_SCHEMA=n8n
     volumes:
       - brandchecker_n8n_data:/home/node/.n8n
       - ./shared:/shared
@@ -66,13 +70,18 @@ services:
       - POSTGRES_USER=brandchecker_user
       - POSTGRES_PASSWORD=brandchecker_password
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - EMBEDDING_MODEL=text-embedding-3-large
+      - LLM_MODEL=gpt-5
+      - EMBEDDING_DIMENSIONS=3072
+      - FALLBACK_EMBEDDING_MODEL=text-embedding-3-small
+      - FALLBACK_LLM_MODEL=gpt-4o
     volumes:
       - ./python_app:/app
       - ./shared:/shared
     working_dir: /app
     command: >
       sh -c "apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0 libpq-dev gcc && 
-             pip install PyMuPDF opencv-python-headless Pillow pdfplumber scikit-learn numpy requests flask pypdf pikepdf pdfrw psycopg2-binary sqlalchemy alembic openai &&
+             pip install PyMuPDF opencv-python-headless Pillow pdfplumber scikit-learn numpy requests flask flask-cors pypdf pikepdf pdfrw psycopg2-binary sqlalchemy alembic openai aiohttp &&
              python app.py"
     networks:
       - brandchecker_network
@@ -146,6 +155,61 @@ services:
       - "127.0.0.1:8086:8080"  # expose on local 8086
     volumes:
       - ./shared:/shared
+    networks:
+      - brandchecker_network
+
+  llm-api-service:
+    image: python:3.11-slim
+    container_name: brandchecker-llm-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8001:8001"  # expose on local 8001
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://brandchecker_user:brandchecker_password@brandchecker-postgres:5432/brandchecker
+      - POSTGRES_HOST=brandchecker-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=brandchecker
+      - POSTGRES_USER=brandchecker_user
+      - POSTGRES_PASSWORD=brandchecker_password
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - EMBEDDING_MODEL=text-embedding-3-large
+      - LLM_MODEL=gpt-5
+      - EMBEDDING_DIMENSIONS=3072
+      - FALLBACK_EMBEDDING_MODEL=text-embedding-3-small
+      - FALLBACK_LLM_MODEL=gpt-4o
+    volumes:
+      - ./python_app:/app
+      - ./shared:/shared
+    working_dir: /app
+    command: >
+      sh -c "apt-get update && apt-get install -y libpq-dev gcc && 
+             pip install 'flask[async]' flask-cors psycopg2-binary openai aiohttp numpy &&
+             python llm_api.py"
+    networks:
+      - brandchecker_network
+    depends_on:
+      brandchecker-postgres:
+        condition: service_healthy
+
+  image-api-service:
+    image: python:3.11-slim
+    container_name: brandchecker-image-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8002:8002"  # expose on local 8002
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - PORT=8002
+    volumes:
+      - ./python_app:/app
+      - ./shared:/shared
+    working_dir: /app
+    command: >
+      sh -c "apt-get update && apt-get install -y libpq-dev gcc && 
+             pip install 'flask[async]' flask-cors openai aiohttp numpy &&
+             python image_api.py"
     networks:
       - brandchecker_network
 

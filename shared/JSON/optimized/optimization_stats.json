@@ -1,0 +1,13 @@
+{
+  "html_optimization": {
+    "original_entries": 0,
+    "colors_found": 0,
+    "duplicates_removed": 0,
+    "entries_split": 0
+  },
+  "graphql_optimization": {
+    "brands": 0,
+    "assets": 0,
+    "duplicates_removed": 0
+  }
+}
