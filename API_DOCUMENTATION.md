@@ -5,13 +5,14 @@
 Das Brandchecker-System bietet drei Hauptservices mit verschiedenen Endpunkten für PDF-Analyse, Brand-Compliance und LLM-Integration.
 
 ### Services
-- **PDF-Analyzer**: Port 7011 - Vollständige PDF-Analyse und Logo-Erkennung
+- **PDF-Analyzer**: Port 8000 - Vollständige PDF-Analyse und Logo-Erkennung
 - **LLM-API**: Port 8001 - Semantische Suche und Brand-Compliance
-- **Image-Analyzer**: Standalone - Bildanalyse mit GPT-4o
+- **Image-API**: Port 8002 - Bildanalyse mit GPT-4o Vision
+- **PostgreSQL**: Port 5433 - Datenbank mit pgvector für Embeddings
 
 ---
 
-## 🔍 PDF-Analyzer Service (Port 7011)
+## 🔍 PDF-Analyzer Service (Port 8000)
 
 ### Health Check
 ```http
@@ -321,6 +322,88 @@ Content-Type: multipart/form-data
 ```
 
 **Response:** AI-generierter visueller Bericht
+
+---
+
+## 🖼️ Image-API Service (Port 8002)
+
+### Health Check
+```http
+GET /health
+```
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "service": "image-api-service",
+  "timestamp": "2025-09-24T09:30:00Z"
+}
+```
+
+---
+
+### Bildanalyse mit GPT-4o Vision
+
+#### Einzelbild-Analyse
+```http
+POST /api/analyze-image
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "image_url": "https://example.com/image.jpg",
+  "brand_id": "9a933c7f-bd87-400f-b13a-b3bce7c822d8"
+}
+```
+
+**Response:**
+```json
+{
+  "analysis": {
+    "detailed_description": {
+      "objects": ["Icon", "Arrow", "Text"],
+      "text": ["Search", "Find"],
+      "visual_elements": ["Bosch logo", "Color blocks"]
+    },
+    "brand_elements": {
+      "logo_detection": {
+        "present": true,
+        "type": "Bosch wordmark",
+        "color": "Red",
+        "position": "Top left"
+      },
+      "colors_used": ["#007bc0", "#ed0007", "#71767c"],
+      "typography": {
+        "font_family": "Bosch Sans",
+        "sizes": "Medium to Large",
+        "styles": "Bold, Regular"
+      }
+    },
+    "asset_type": "Icon",
+    "brand_compliance_score": 100,
+    "technical_analysis": {
+      "quality": "High",
+      "style": "Modern and clean",
+      "professional_appearance": "Yes"
+    }
+  },
+  "compliance_score": 100,
+  "logo_detected": true,
+  "model_used": "gpt-4o",
+  "status": "success",
+  "timestamp": "2025-09-24T09:30:00Z"
+}
+```
+
+**Features:**
+- **GPT-4o Vision**: Detaillierte Bildanalyse mit Logo-Erkennung
+- **Brand Compliance**: Automatische Bewertung (0-100)
+- **SVG-Unterstützung**: Automatische Konvertierung zu PNG
+- **Farb-Extraktion**: HEX-Werte aus Bildern
+- **Icon-Klassifizierung**: Automatische Kategorisierung
 
 ---
 

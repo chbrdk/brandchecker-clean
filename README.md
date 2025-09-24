@@ -22,6 +22,9 @@ Ein umfassendes Docker-basiertes System für automatisierte Brand-Analyse mit KI
 - **🎨 Farb-Ähnlichkeits-Bewertung** mit HSV-basierten Algorithmen für intelligente Farb-Matching
 - **📊 Brand-Compliance-Analyzer** für automatische Konformitätsbewertung
 - **⚡ Streaming-Unterstützung** für Echtzeit-Antworten in n8n Workflows
+- **🖼️ Bildanalyse** mit GPT-4o Vision für Icons, Logos und Grafiken
+- **📐 SVG-Unterstützung** mit automatischer PNG-Konvertierung
+- **🎯 Icon-Klassifizierung** mit detaillierter Beschreibung und Brand-Compliance
 
 ## Services
 
@@ -43,8 +46,16 @@ Ein umfassendes Docker-basiertes System für automatisierte Brand-Analyse mit KI
 - **Streaming**: Unterstützt Echtzeit-Antworten für n8n Integration
 - **Farb-Ähnlichkeits**: HSV-basierte Farb-Matching-Algorithmen
 
+### Image API Service (NEU!)
+- **Port**: 8002
+- **Features**: Bildanalyse mit GPT-4o Vision für Icons, Logos und Grafiken
+- **URL**: http://localhost:8002
+- **Endpoints**: `/api/analyze-image`
+- **SVG-Support**: Automatische Konvertierung von SVG zu PNG
+- **Brand Compliance**: Automatische Bewertung von Brand Guide Bildern (100/100)
+
 ### PostgreSQL mit pgvector
-- **Port**: 5432
+- **Port**: 5433
 - **Features**: Vector Embeddings für semantische Suche
 - **pgvector**: Für effiziente Ähnlichkeitssuche in Brand Guidelines
 
