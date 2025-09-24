@@ -243,6 +243,38 @@ class OpenAIEmbeddingService:
                 
                 asset_texts = cursor.fetchall()
                 
+                # Get image analysis results
+                cursor.execute("""
+                    SELECT 
+                        iar.id,
+                        iar.original_url,
+                        iar.asset_category,
+                        iar.compliance_score,
+                        'image_analysis' as chunk_type,
+                        CONCAT('Image Analysis: ', 
+                               COALESCE(iar.asset_category, 'Unknown Asset'), 
+                               ' (Compliance: ', COALESCE(iar.compliance_score, 0), '/100)',
+                               CASE WHEN iar.logo_detected THEN ' - Logo detected' ELSE '' END,
+                               CASE WHEN iar.brand_elements IS NOT NULL THEN 
+                                   ' - Brand elements: ' || iar.brand_elements::text ELSE '' END
+                        ) as content,
+                        jsonb_build_object(
+                            'image_url', iar.original_url,
+                            'asset_category', iar.asset_category,
+                            'compliance_score', iar.compliance_score,
+                            'logo_detected', iar.logo_detected,
+                            'brand_elements', iar.brand_elements,
+                            'analysis_result', iar.analysis_result,
+                            'source_context', iar.source_context
+                        ) as metadata
+                    FROM image_analysis_results iar
+                    WHERE iar.brand_id = %s
+                    AND iar.status = 'analyzed'
+                    AND iar.analysis_result IS NOT NULL
+                """, (brand_id,))
+                
+                image_texts = cursor.fetchall()
+                
                 # Get guideline content
                 cursor.execute("""
                     SELECT 
@@ -293,6 +325,7 @@ class OpenAIEmbeddingService:
                 # Combine all texts
                 all_texts = []
                 all_texts.extend(asset_texts)
+                all_texts.extend(image_texts)
                 all_texts.extend(guideline_texts)
                 all_texts.extend(section_texts)
                 

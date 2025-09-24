@@ -97,30 +97,48 @@ class ImageAnalysisService:
                            image_data: bytes, url: str, content_type: str) -> dict:
         """Analysiert Bild mit GPT-4o"""
         
-        # Optimierter Prompt für detaillierte Bildanalyse
-        prompt = """Analysiere dieses Bild aus den Bosch Brand Guidelines sehr detailliert:
+        # Ultra-detaillierter Prompt für Bosch Brand Guide Referenz-Bilder
+        prompt = """Du analysierst ein Bild aus den OFFIZIELLEN Bosch Brand Guidelines. Diese Bilder sind die REFERENZ-BASIS für alle Bosch-Branding.
 
-**DETAILLIERTE BESCHREIBUNG:**
-- Beschreibe jeden sichtbaren Bereich und jedes Element im Detail
-- Identifiziere alle Personen, Objekte, Texte und grafischen Elemente
-- Analysiere die Komposition und das Layout
+**WICHTIG:** Da dies ein OFFIZIELLES Bosch Brand Guide Bild ist, ist die Brand-Compliance automatisch 100/100.
 
-**BRAND-ELEMENTE:**
-- Bosch-Logo vorhanden? (Typ, Farbe, Position, Qualität)
-- Bosch-Farben verwendet? (spezifische HEX-Werte: #007bc0, #ed0007, #71767c)
-- Bosch-Typography? (Schriftarten, Größen, Gewichte)
+**SEHR DETAILLIERTE BESCHREIBUNG - BESCHREIBE ALLES WAS DU SIEHST:**
+- Beschreibe JEDES sichtbare Element im Detail (Formen, Linien, Flächen, Objekte)
+- Analysiere die genaue Komposition und Anordnung aller Elemente
+- Beschreibe Farben, Schatten, Texturen, Muster
+- Erkenne und beschreibe alle grafischen Elemente: Icons, Symbole, Illustrationen, Logos, Texte
+- Analysiere die visuelle Hierarchie und das Layout
 
-**ASSET-KATEGORISIERUNG:**
-- Asset-Typ: Logo, Icon, Produktbild, Marketing-Material, Illustration, Avatar
-- Verwendungszweck und Zielgruppe
-- Brand-Compliance-Bewertung (0-100 Punkte)
+**BOSCH BRAND ELEMENTE - GENAUE IDENTIFIKATION:**
+- Logo-Erkennung: Bosch-Logo vorhanden? (Typ, Farbe, Position, Größe, Variante)
+- Bosch-Farben: Verwendete HEX-Werte (#007bc0, #ed0007, #71767c, #f8f9fa, etc.)
+- Typography: Bosch-Schriftarten, Größen, Gewichte, Stile
+- Design-Sprache: Stilisierung, Strichführung, Icon-Stil, Design-Prinzipien
 
-**TECHNISCHE ANALYSE:**
-- Bildqualität und -schärfe
-- Design-Stil und Ästhetik
-- Hauptfarben (mit HEX-Werten wenn möglich)
+**ASSET-KLASSIFIZIERUNG:**
+- Asset-Typ: Icon, Symbol, Illustration, Logo-Variante, Marketing-Grafik, UI-Element, Produktbild
+- Verwendungszweck: Navigation, Funktions-Icon, Dekoration, Brand-Element, Informationsgrafik
+- Design-Kategorie: Minimalistisch, Stilisiert, Realistisch, Abstrakt, Technisch, Organisch
 
-Antworte als strukturiertes JSON mit deutschen Beschreibungen."""
+**TECHNISCHE BEWERTUNG - SEHR DETAILLIERT:**
+- Strichführung: Dünn/Dick, Gerade/Kurvig, Einheitlich, Variabel
+- Stilisierung: Grad der Abstraktion (1-10), Art der Stilisierung
+- Farbgenauigkeit: Exakte HEX-Werte aller verwendeten Farben
+- Komposition: Symmetrie, Balance, Proportionen, Goldener Schnitt
+- Design-Qualität: Präzision, Klarheit, Konsistenz
+
+**COMPLIANCE-BEWERTUNG:**
+- Brand_Compliance: 100 (da offizielles Brand Guide Material)
+- Technische_Qualität: 0-100 (Schärfe, Auflösung, Design-Qualität)
+- Konsistenz: 0-100 (Einheitlichkeit mit anderen Brand-Elementen)
+
+**BESCHREIBUNG DER SICHTBAREN INHALTE:**
+- Was genau siehst du? Beschreibe alle Objekte, Formen, Linien, Farben
+- Welche Elemente sind dominant, welche sekundär?
+- Wie ist die visuelle Hierarchie aufgebaut?
+- Welche Emotionen oder Assoziationen vermittelt das Bild?
+
+Antworte als strukturiertes JSON mit sehr detaillierten deutschen Beschreibungen. Sei extrem präzise in der Beschreibung dessen, was du siehst."""
         
         base64_image = base64.b64encode(image_data).decode('utf-8')
         
@@ -174,6 +192,9 @@ Antworte als strukturiertes JSON mit deutschen Beschreibungen."""
                     
                     if logo_detected:
                         self.stats['logos_detected'] += 1
+                    
+                    # Extrahiere Compliance-Score (Brand-Compliance ist für Brand Guide Bilder immer 100)
+                    compliance_score = self.extract_compliance_score(analysis_json)
                     
                     logger.info(f"Success with {self.model}: {len(content)} chars, {tokens_used} tokens")
                     
@@ -234,6 +255,44 @@ Antworte als strukturiertes JSON mit deutschen Beschreibungen."""
                         return True
         
         return False
+    
+    def extract_compliance_score(self, analysis_json: dict) -> int:
+        """Extrahiert den Compliance-Score aus der Analyse"""
+        if not isinstance(analysis_json, dict):
+            return 100  # Für Brand Guide Bilder: Standard 100
+        
+        # Für Brand Guide Bilder ist Brand-Compliance immer 100
+        # Suche nach verschiedenen Score-Feldern in der verschachtelten Struktur
+        score_fields = [
+            'brand_compliance', 'Brand_Compliance', 'compliance_score', 
+            'Compliance_Bewertung', 'brand-compliance-bewertung',
+            'Brand_Compliance_Score', 'brand_compliance_score'
+        ]
+        
+        # Suche in der Hauptebene
+        for field in score_fields:
+            if field in analysis_json:
+                score = analysis_json[field]
+                if isinstance(score, (int, float)):
+                    # Für Brand Guide Bilder: Immer 100, auch wenn GPT niedrige Scores gibt
+                    return 100
+                elif isinstance(score, str) and score.isdigit():
+                    return 100
+        
+        # Suche in verschachtelten Strukturen (z.B. detailed_description)
+        if 'detailed_description' in analysis_json:
+            desc = analysis_json['detailed_description']
+            if isinstance(desc, dict) and 'text' in desc:
+                text = desc['text']
+                if isinstance(text, str):
+                    # Suche nach JSON in der Beschreibung
+                    import re
+                    json_match = re.search(r'"Brand_Compliance_Score":\s*(\d+)', text)
+                    if json_match:
+                        return 100  # Für Brand Guide Bilder: Immer 100
+        
+        # Für Brand Guide Bilder: Standard 100 (da offizielle Referenz)
+        return 100
     
     async def process_single_image(self, session: aiohttp.ClientSession, url: str) -> dict:
         """Verarbeitet ein einzelnes Bild komplett"""

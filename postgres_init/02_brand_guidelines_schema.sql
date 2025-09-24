@@ -287,3 +287,56 @@ INSERT INTO knowledge_categories (name, description) VALUES
 ('Color Guidelines', 'Brand color usage and specifications'),
 ('Typography Guidelines', 'Font and typography specifications')
 ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
+-- IMAGE ANALYSIS RESULTS TABLE
+-- ============================================================================
+
+-- Extended image analysis results table with original URL connection
+CREATE TABLE IF NOT EXISTS image_analysis_results (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    original_url TEXT NOT NULL, -- Original URL from brand guidelines
+    processed_url TEXT, -- URL used for analysis (may be converted from SVG to PNG)
+    image_type VARCHAR(50), -- 'image', 'svg_converted', 'logo', 'graphic'
+    content_type VARCHAR(100), -- MIME type
+    file_size INTEGER, -- Size in bytes
+    width INTEGER, -- Image width
+    height INTEGER, -- Image height
+    analysis_result JSONB, -- Complete GPT-4o analysis
+    logo_detected BOOLEAN DEFAULT FALSE,
+    brand_elements JSONB, -- Extracted brand elements (colors, fonts, etc.)
+    compliance_score INTEGER, -- Brand compliance score 0-100
+    asset_category VARCHAR(100), -- 'logo', 'marketing_material', 'product_image', 'illustration'
+    source_context TEXT, -- Context from where the image was extracted
+    page_reference UUID REFERENCES guideline_pages(id), -- Reference to source page
+    brand_id UUID REFERENCES brands(id),
+    status VARCHAR(50) DEFAULT 'pending', -- 'pending', 'analyzed', 'error', 'skipped'
+    error_message TEXT,
+    tokens_used INTEGER, -- OpenAI tokens consumed
+    model_used VARCHAR(50), -- 'gpt-4o', 'gpt-5'
+    analysis_timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Index for efficient queries
+CREATE INDEX IF NOT EXISTS idx_image_analysis_brand_id ON image_analysis_results(brand_id);
+CREATE INDEX IF NOT EXISTS idx_image_analysis_status ON image_analysis_results(status);
+CREATE INDEX IF NOT EXISTS idx_image_analysis_logo_detected ON image_analysis_results(logo_detected);
+CREATE INDEX IF NOT EXISTS idx_image_analysis_compliance_score ON image_analysis_results(compliance_score);
+CREATE INDEX IF NOT EXISTS idx_image_analysis_original_url ON image_analysis_results(original_url);
+
+-- Function to update the updated_at timestamp
+CREATE OR REPLACE FUNCTION update_image_analysis_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Trigger to automatically update updated_at
+CREATE TRIGGER update_image_analysis_results_updated_at
+    BEFORE UPDATE ON image_analysis_results
+    FOR EACH ROW
+    EXECUTE FUNCTION update_image_analysis_updated_at();
