@@ -160,7 +160,7 @@ Antworte als strukturiertes JSON mit sehr detaillierten deutschen Beschreibungen
                         }
                     ]
                 }],
-                "max_completion_tokens": 1500
+                "max_completion_tokens": 15000
             }
             
             async with session.post(
