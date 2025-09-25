@@ -17,7 +17,7 @@
   /* Base styles */
   width: 100%;
   border: 1px solid var(--color-border-primary);
-  border-radius: var(--radius-input);
+  border-radius: var(--border-radius-md);
   font-family: var(--font-family-sans);
   font-size: var(--font-size-base);
   line-height: var(--line-height-normal);
@@ -33,7 +33,7 @@
   
   /* Focus styles */
   &:focus {
-    border-color: var(--color-border-focus);
+    border-color: var(--color-border-secondary);
     box-shadow: 0 0 0 3px var(--color-primary-100);
   }
   
@@ -107,7 +107,7 @@
   
   &:focus {
     background-color: var(--color-surface-primary);
-    border-color: var(--color-border-focus);
+    border-color: var(--color-border-secondary);
   }
 }
 
@@ -120,7 +120,7 @@
   padding-right: 0;
   
   &:focus {
-    border-bottom-color: var(--color-border-focus);
+    border-bottom-color: var(--color-border-secondary);
     box-shadow: none;
   }
 }

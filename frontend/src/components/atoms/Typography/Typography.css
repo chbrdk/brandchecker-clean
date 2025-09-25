@@ -58,6 +58,20 @@
   margin-bottom: var(--space-2);
 }
 
+/* Remove margin-bottom when Typography is used inside buttons */
+.btn .typography--body,
+.btn .typography--caption,
+.btn .typography--small,
+.btn .typography--h1,
+.btn .typography--h2,
+.btn .typography--h3,
+.btn .typography--h4,
+.btn .typography--h5,
+.btn .typography--h6,
+.btn .typography--lead {
+  margin-bottom: 0;
+}
+
 .typography--caption {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-normal);

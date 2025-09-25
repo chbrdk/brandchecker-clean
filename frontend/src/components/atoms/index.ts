@@ -14,6 +14,9 @@ export type { CardProps } from './Card';
 export { Container } from './Container';
 export type { ContainerProps } from './Container';
 
+export { FileUpload } from './FileUpload';
+export type { FileUploadProps } from './FileUpload';
+
 export { Grid, GridItem } from './Grid';
 export type { GridProps, GridItemProps } from './Grid';
 
@@ -58,3 +61,37 @@ export type {
 
 export { Chip, ChipGroup } from './Chip';
 export type { ChipProps, ChipGroupProps } from './Chip';
+
+export { Avatar } from './Avatar';
+export type { AvatarProps } from './Avatar';
+
+export { Score } from './Score';
+export type { ScoreProps } from './Score';
+
+export { TrafficLight } from './TrafficLight';
+export type { TrafficLightProps, TrafficLightStatus } from './TrafficLight';
+
+export { ProgressBar } from './ProgressBar';
+export type { ProgressBarProps, ProgressBarVariant } from './ProgressBar';
+
+export { MetricCard } from './MetricCard';
+export type { MetricCardProps, MetricCardType } from './MetricCard';
+
+export { Chart } from './Chart';
+export type { ChartProps, ChartType, ChartDataPoint } from './Chart';
+
+export { RecommendationList } from './RecommendationList';
+export type { 
+  RecommendationListProps, 
+  RecommendationItem, 
+  RecommendationPriority, 
+  RecommendationStatus 
+} from './RecommendationList';
+
+export { ResultCard } from './ResultCard';
+export type { 
+  ResultCardProps, 
+  ResultCardType, 
+  ResultCardVariant, 
+  AnalysisResult 
+} from './ResultCard';

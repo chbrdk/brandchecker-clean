@@ -1,0 +1,133 @@
+/* BrandChecker Chat Template Styles */
+
+.brandchecker-chat {
+  min-height: 100vh;
+  background-color: var(--color-grey-200);
+  display: flex;
+  flex-direction: column;
+}
+
+.brandchecker-chat__header {
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  text-align: center;
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border-primary);
+}
+
+.brandchecker-chat__messages {
+  flex: 1;
+  padding: var(--space-4) var(--space-6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+
+.brandchecker-chat__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-primary);
+}
+
+.brandchecker-chat__loading {
+  opacity: 0.7;
+}
+
+.brandchecker-chat__toolbar {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-4);
+  z-index: 100;
+}
+
+/* Message alignment */
+.brandchecker-chat__messages .chat-card--user {
+  align-self: flex-end;
+  max-width: 70%;
+}
+
+.brandchecker-chat__messages .chat-card--agent {
+  align-self: flex-start;
+  max-width: 70%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .brandchecker-chat__header {
+    padding: var(--space-4) var(--space-4) var(--space-3);
+  }
+  
+  .brandchecker-chat__messages {
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+  }
+  
+  .brandchecker-chat__messages .chat-card--user,
+  .brandchecker-chat__messages .chat-card--agent {
+    max-width: 85%;
+  }
+}
+
+@media (max-width: 480px) {
+  .brandchecker-chat__header {
+    padding: var(--space-3) var(--space-3) var(--space-2);
+  }
+  
+  .brandchecker-chat__messages {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+  
+  .brandchecker-chat__messages .chat-card--user,
+  .brandchecker-chat__messages .chat-card--agent {
+    max-width: 90%;
+  }
+  
+  .brandchecker-chat__toolbar {
+    padding: var(--space-3);
+  }
+}
+
+/* Scrollbar styling */
+.brandchecker-chat__messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.brandchecker-chat__messages::-webkit-scrollbar-track {
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.brandchecker-chat__messages::-webkit-scrollbar-thumb {
+  background: var(--color-border-secondary);
+  border-radius: var(--border-radius-sm);
+}
+
+.brandchecker-chat__messages::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .brandchecker-chat__header {
+    border-bottom-width: 2px;
+  }
+  
+  .brandchecker-chat__empty {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .brandchecker-chat__loading {
+    opacity: 1;
+  }
+}

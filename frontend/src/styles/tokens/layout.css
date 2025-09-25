@@ -45,6 +45,12 @@
   --height-button-lg: var(--size-lg);     /* 48px */
   --height-button-xl: var(--size-xl);     /* 56px */
 
+  /* Progress Bar Heights */
+  --height-progress-xs: 0.25rem;    /* 4px */
+  --height-progress-sm: 0.5rem;      /* 8px */
+  --height-progress-md: 0.75rem;    /* 12px */
+  --height-progress-lg: 1rem;        /* 16px */
+
   /* Input Heights */
   --height-input-xs: var(--size-xs);      /* 24px */
   --height-input-sm: var(--size-sm);      /* 32px */

@@ -30,7 +30,7 @@ export interface ButtonProps {
   /** Full width button */
   fullWidth?: boolean;
   /** Button content */
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /** Click handler */
   onClick?: () => void;
   /** Button type */
@@ -93,6 +93,9 @@ export const Button = ({
   // Determine if button should be disabled (either explicitly disabled or loading)
   const isDisabled = disabled || loading;
   
+  // Check if this is an icon-only button (no text content)
+  const isIconOnly = (iconName || icon) && (!children || children === '');
+  
   // Build CSS classes for button styling
   const buttonClasses = [
     'btn',
@@ -101,6 +104,7 @@ export const Button = ({
     fullWidth && 'btn--full-width',
     loading && 'btn--loading',
     isDisabled && 'btn--disabled',
+    isIconOnly && 'btn--icon-only',
     className
   ].filter(Boolean).join(' ');
 
@@ -129,6 +133,16 @@ export const Button = ({
     ) : icon;
 
     if (iconElement) {
+      // If this is an icon-only button, just render the icon
+      if (isIconOnly) {
+        return (
+          <span className="btn__icon" aria-hidden="true">
+            {iconElement}
+          </span>
+        );
+      }
+      
+      // Otherwise render icon with text
       return (
         <>
           {iconPosition === 'left' && (
@@ -136,7 +150,7 @@ export const Button = ({
               {iconElement}
             </span>
           )}
-          <Typography variant="body" size="sm" className="btn__text">{children}</Typography>
+          <Typography variant="body" size="sm" className="btn__text">{children || ''}</Typography>
           {iconPosition === 'right' && (
             <span className="btn__icon btn__icon--right" aria-hidden="true">
               {iconElement}
@@ -146,7 +160,7 @@ export const Button = ({
       );
     }
 
-    return <Typography variant="body" size="sm" className="btn__text">{children}</Typography>;
+    return <Typography variant="body" size="sm" className="btn__text">{children || ''}</Typography>;
   };
 
   return (

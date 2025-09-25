@@ -1,0 +1,232 @@
+/* BrandChecker Avatar Component Styles */
+
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-neutral-300);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: var(--transition-colors);
+}
+
+/* Sizes */
+.avatar--xs {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: var(--font-size-xs);
+}
+
+.avatar--sm {
+  width: 2rem;
+  height: 2rem;
+  font-size: var(--font-size-sm);
+}
+
+.avatar--md {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: var(--font-size-base);
+}
+
+.avatar--lg {
+  width: 3rem;
+  height: 3rem;
+  font-size: var(--font-size-lg);
+}
+
+.avatar--xl {
+  width: 4rem;
+  height: 4rem;
+  font-size: var(--font-size-xl);
+}
+
+/* Shapes */
+.avatar--circle {
+  border-radius: 50%;
+}
+
+.avatar--square {
+  border-radius: var(--border-radius-sm);
+}
+
+.avatar--rounded {
+  border-radius: var(--border-radius-md);
+}
+
+/* Clickable */
+.avatar--clickable {
+  cursor: pointer;
+}
+
+.avatar--clickable:hover {
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.avatar--clickable:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.avatar--clickable:active {
+  transform: scale(0.95);
+}
+
+/* Avatar content */
+.avatar__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.avatar__initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.avatar__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar__fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.avatar__icon-svg {
+  width: 60%;
+  height: 60%;
+  fill: currentColor;
+}
+
+/* Icon component support */
+.avatar__icon .icon {
+  width: 60%;
+  height: 60%;
+}
+
+.avatar__fallback .icon {
+  width: 60%;
+  height: 60%;
+}
+
+/* Status indicators */
+.avatar__status {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  border: 2px solid var(--color-background);
+  box-sizing: border-box;
+}
+
+.avatar__status--online {
+  background-color: var(--color-status-success);
+}
+
+.avatar__status--offline {
+  background-color: var(--color-neutral-400);
+}
+
+.avatar__status--away {
+  background-color: var(--color-status-warning);
+}
+
+.avatar__status--busy {
+  background-color: var(--color-status-error);
+}
+
+/* Status positioning adjustments for different sizes */
+.avatar--xs .avatar__status {
+  width: 30%;
+  height: 30%;
+  border-width: 1px;
+}
+
+.avatar--sm .avatar__status {
+  width: 28%;
+  height: 28%;
+  border-width: 1.5px;
+}
+
+.avatar--lg .avatar__status {
+  width: 22%;
+  height: 22%;
+  border-width: 2.5px;
+}
+
+.avatar--xl .avatar__status {
+  width: 20%;
+  height: 20%;
+  border-width: 3px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .avatar--xl {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+  
+  .avatar--lg {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar--xl {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .avatar--lg {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .avatar--md {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .avatar {
+    border: 2px solid var(--color-border-primary);
+  }
+  
+  .avatar__status {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .avatar,
+  .avatar--clickable:hover,
+  .avatar--clickable:active {
+    transition: none;
+    transform: none;
+  }
+}

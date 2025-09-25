@@ -157,9 +157,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
 
   // Render icon element (from icon library or custom icon)
   const renderIcon = () => {
+    // Determine icon size based on input size
+    const iconSize = size === 'small' ? 'xs' : size === 'large' ? 'md' : 'sm';
+    
     // Use iconName from icon library if provided
     const iconElement = iconName ? (
-      <Icon name={iconName} size="sm" />
+      <Icon name={iconName} size={iconSize} />
     ) : icon;
 
     if (!iconElement) return null;

@@ -1,0 +1,416 @@
+/* BrandChecker Result Card Component Styles */
+
+.result-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background-color: var(--color-surface-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--border-radius-lg);
+  transition: var(--transition-colors);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Full Width Layout */
+.result-card--full-width {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.result-card--full-width .result-card__content {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.result-card--full-width .result-card__score-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.result-card--full-width .result-card__analysis-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.result-card--full-width .result-card__recommendations-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Full Width Header */
+.result-card--full-width .result-card__header {
+  grid-column: 1 / -1;
+  margin-bottom: var(--space-2);
+}
+
+/* Full Width Chart Section */
+.result-card--full-width .result-card__chart {
+  grid-column: 1 / -1;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.result-card--clickable {
+  cursor: pointer;
+}
+
+.result-card--clickable:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.result-card--clickable:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.result-card--clickable:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Header */
+.result-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.result-card__title-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  min-width: 0;
+}
+
+.result-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.result-card__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.result-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.result-card__expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+  border: none;
+  background: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  border-radius: var(--border-radius-sm);
+  transition: var(--transition-colors);
+}
+
+.result-card__expand:hover {
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+}
+
+/* Content */
+.result-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Score Section */
+.result-card__score {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Status Section */
+.result-card__status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Analysis Section */
+.result-card__analysis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.result-card__analysis-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.result-card__analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.result-card__analysis-indicators {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* Chart Section */
+.result-card__chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Recommendations Section */
+.result-card__recommendations {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Details Section */
+.result-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.result-card__tags {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+
+/* Type-specific styling */
+.result-card--score .result-card__content {
+  align-items: center;
+  justify-content: center;
+}
+
+.result-card--analysis .result-card__content {
+  gap: var(--space-4);
+}
+
+.result-card--comparison .result-card__content {
+  gap: var(--space-3);
+}
+
+.result-card--trend .result-card__content {
+  gap: var(--space-3);
+}
+
+.result-card--recommendations .result-card__content {
+  gap: var(--space-2);
+}
+
+.result-card--summary .result-card__content {
+  gap: var(--space-3);
+}
+
+/* Variant-specific styling */
+.result-card--compact {
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+.result-card--compact .result-card__content {
+  gap: var(--space-2);
+}
+
+.result-card--detailed {
+  padding: var(--space-5);
+  gap: var(--space-5);
+}
+
+.result-card--detailed .result-card__content {
+  gap: var(--space-4);
+}
+
+.result-card--interactive {
+  border: 2px solid var(--color-border-primary);
+}
+
+.result-card--interactive:hover {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Status-based styling */
+.result-card--success {
+  border-left: 4px solid var(--color-status-success);
+}
+
+.result-card--warning {
+  border-left: 4px solid var(--color-status-warning);
+}
+
+.result-card--error {
+  border-left: 4px solid var(--color-status-error);
+}
+
+/* Size variants */
+.result-card--sm {
+  padding: var(--space-3);
+  gap: var(--space-2);
+}
+
+.result-card--sm .result-card__content {
+  gap: var(--space-2);
+}
+
+.result-card--md {
+  padding: var(--space-4);
+  gap: var(--space-3);
+}
+
+.result-card--md .result-card__content {
+  gap: var(--space-3);
+}
+
+.result-card--lg {
+  padding: var(--space-5);
+  gap: var(--space-4);
+}
+
+.result-card--lg .result-card__content {
+  gap: var(--space-4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .result-card {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+  
+  .result-card--detailed {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+  
+  .result-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  
+  .result-card__actions {
+    align-self: flex-end;
+  }
+  
+  .result-card__analysis-item {
+    padding: var(--space-2);
+  }
+  
+  .result-card__analysis-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  
+  .result-card__analysis-indicators {
+    align-self: flex-end;
+  }
+  
+  /* Full Width Responsive */
+  .result-card--full-width .result-card__content {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .result-card--full-width .result-card__score-column,
+  .result-card--full-width .result-card__analysis-column,
+  .result-card--full-width .result-card__recommendations-column {
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .result-card {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+  
+  .result-card--detailed {
+    padding: var(--space-3);
+    gap: var(--space-3);
+  }
+  
+  .result-card__title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  
+  .result-card__details {
+    gap: var(--space-1);
+  }
+  
+  .result-card__tags {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .result-card {
+    border-width: 2px;
+  }
+  
+  .result-card--success,
+  .result-card--warning,
+  .result-card--error {
+    border-left-width: 6px;
+  }
+  
+  .result-card__analysis-item {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .result-card,
+  .result-card__expand {
+    transition: none;
+  }
+  
+  .result-card--clickable:hover {
+    transform: none;
+  }
+}
