@@ -1,0 +1,82 @@
+/* BrandChecker Design Tokens - Typography */
+
+:root {
+  /* Font Families */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro', 'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+  --font-family-serif: 'Times New Roman', 'Times', 'Baskerville', 'Georgia', 'Palatino', 'Book Antiqua', serif;
+
+  /* Font Sizes */
+  --font-size-xs: 0.75rem;     /* 12px */
+  --font-size-sm: 0.875rem;    /* 14px */
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+  --font-size-5xl: 3rem;       /* 48px */
+  --font-size-6xl: 3.75rem;    /* 60px */
+  --font-size-7xl: 4.5rem;     /* 72px */
+  --font-size-8xl: 6rem;       /* 96px */
+  --font-size-9xl: 8rem;       /* 128px */
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* Typography Scale */
+  --text-xs: var(--font-size-xs) / var(--line-height-tight) var(--font-family-sans);
+  --text-sm: var(--font-size-sm) / var(--line-height-normal) var(--font-family-sans);
+  --text-base: var(--font-size-base) / var(--line-height-normal) var(--font-family-sans);
+  --text-lg: var(--font-size-lg) / var(--line-height-normal) var(--font-family-sans);
+  --text-xl: var(--font-size-xl) / var(--line-height-normal) var(--font-family-sans);
+  --text-2xl: var(--font-size-2xl) / var(--line-height-tight) var(--font-family-sans);
+  --text-3xl: var(--font-size-3xl) / var(--line-height-tight) var(--font-family-sans);
+  --text-4xl: var(--font-size-4xl) / var(--line-height-tight) var(--font-family-sans);
+  --text-5xl: var(--font-size-5xl) / var(--line-height-none) var(--font-family-sans);
+  --text-6xl: var(--font-size-6xl) / var(--line-height-none) var(--font-family-sans);
+
+  /* Semantic Typography */
+  --text-heading-1: var(--text-4xl);
+  --text-heading-2: var(--text-3xl);
+  --text-heading-3: var(--text-2xl);
+  --text-heading-4: var(--text-xl);
+  --text-heading-5: var(--text-lg);
+  --text-heading-6: var(--text-base);
+  
+  --text-body-large: var(--text-lg);
+  --text-body: var(--text-base);
+  --text-body-small: var(--text-sm);
+  
+  --text-caption: var(--text-xs);
+  --text-label: var(--text-sm);
+  --text-button: var(--text-sm);
+  --text-input: var(--text-base);
+  
+  --text-code: var(--font-size-sm) / var(--line-height-normal) var(--font-family-mono);
+  --text-pre: var(--font-size-sm) / var(--line-height-relaxed) var(--font-family-mono);
+}

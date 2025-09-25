@@ -1,0 +1,23 @@
+# Dockerfile für Storybook
+FROM node:20-alpine
+
+# Arbeitsverzeichnis setzen
+WORKDIR /app
+
+# Package.json und package-lock.json kopieren
+COPY package*.json ./
+
+# Dependencies installieren
+RUN npm ci
+
+# Source Code kopieren
+COPY . .
+
+# Storybook build
+RUN npm run build-storybook
+
+# Port freigeben
+EXPOSE 6006
+
+# Storybook starten ohne automatisches Browser-Öffnen
+CMD ["npm", "run", "storybook", "--", "--no-open"]

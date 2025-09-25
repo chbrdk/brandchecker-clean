@@ -1,0 +1,98 @@
+/* BrandChecker Icon Component */
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+/* Clickable icons */
+.icon--clickable {
+  cursor: pointer;
+}
+
+.icon--clickable:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+.icon--clickable:active {
+  transform: scale(0.95);
+}
+
+/* Size variants */
+.icon--xs {
+  width: 12px;
+  height: 12px;
+}
+
+.icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.icon--md {
+  width: 20px;
+  height: 20px;
+}
+
+.icon--lg {
+  width: 24px;
+  height: 24px;
+}
+
+.icon--xl {
+  width: 32px;
+  height: 32px;
+}
+
+/* Loading animation for loading icon */
+.icon--loading {
+  animation: icon-spin 1s linear infinite;
+}
+
+@keyframes icon-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Color utilities - can be used with custom CSS classes */
+.icon--primary {
+  color: #3b82f6;
+}
+
+.icon--secondary {
+  color: #6b7280;
+}
+
+.icon--success {
+  color: #10b981;
+}
+
+.icon--warning {
+  color: #f59e0b;
+}
+
+.icon--error {
+  color: #ef4444;
+}
+
+.icon--muted {
+  color: #9ca3af;
+}
+
+/* Brand colors */
+.icon--brand {
+  color: #1d4ed8;
+}
+
+.icon--accent {
+  color: #7c3aed;
+}

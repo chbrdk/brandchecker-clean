@@ -1,0 +1,114 @@
+/* BrandChecker Design Tokens - Spacing */
+
+:root {
+  /* Base Spacing Scale (8px base unit) */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0-5: 0.125rem;   /* 2px */
+  --space-1: 0.25rem;      /* 4px */
+  --space-1-5: 0.375rem;    /* 6px */
+  --space-2: 0.5rem;       /* 8px */
+  --space-2-5: 0.625rem;    /* 10px */
+  --space-3: 0.75rem;      /* 12px */
+  --space-3-5: 0.875rem;   /* 14px */
+  --space-4: 1rem;         /* 16px */
+  --space-5: 1.25rem;      /* 20px */
+  --space-6: 1.5rem;       /* 24px */
+  --space-7: 1.75rem;      /* 28px */
+  --space-8: 2rem;         /* 32px */
+  --space-9: 2.25rem;      /* 36px */
+  --space-10: 2.5rem;      /* 40px */
+  --space-11: 2.75rem;     /* 44px */
+  --space-12: 3rem;        /* 48px */
+  --space-14: 3.5rem;      /* 56px */
+  --space-16: 4rem;        /* 64px */
+  --space-20: 5rem;        /* 80px */
+  --space-24: 6rem;        /* 96px */
+  --space-28: 7rem;        /* 112px */
+  --space-32: 8rem;        /* 128px */
+  --space-36: 9rem;        /* 144px */
+  --space-40: 10rem;       /* 160px */
+  --space-44: 11rem;       /* 176px */
+  --space-48: 12rem;       /* 192px */
+  --space-52: 13rem;       /* 208px */
+  --space-56: 14rem;       /* 224px */
+  --space-60: 15rem;       /* 240px */
+  --space-64: 16rem;       /* 256px */
+  --space-72: 18rem;       /* 288px */
+  --space-80: 20rem;       /* 320px */
+  --space-96: 24rem;       /* 384px */
+
+  /* Semantic Spacing */
+  --space-xs: var(--space-1);      /* 4px */
+  --space-sm: var(--space-2);      /* 8px */
+  --space-md: var(--space-4);      /* 16px */
+  --space-lg: var(--space-6);      /* 24px */
+  --space-xl: var(--space-8);      /* 32px */
+  --space-2xl: var(--space-12);     /* 48px */
+  --space-3xl: var(--space-16);    /* 64px */
+  --space-4xl: var(--space-24);    /* 96px */
+  --space-5xl: var(--space-32);    /* 128px */
+
+  /* Component-specific Spacing */
+  --space-component-xs: var(--space-1);    /* 4px */
+  --space-component-sm: var(--space-2);    /* 8px */
+  --space-component-md: var(--space-3);    /* 12px */
+  --space-component-lg: var(--space-4);    /* 16px */
+  --space-component-xl: var(--space-6);    /* 24px */
+
+  /* Layout Spacing */
+  --space-layout-xs: var(--space-4);       /* 16px */
+  --space-layout-sm: var(--space-6);      /* 24px */
+  --space-layout-md: var(--space-8);      /* 32px */
+  --space-layout-lg: var(--space-12);     /* 48px */
+  --space-layout-xl: var(--space-16);     /* 64px */
+
+  /* Container Spacing */
+  --space-container-sm: var(--space-4);    /* 16px */
+  --space-container-md: var(--space-6);   /* 24px */
+  --space-container-lg: var(--space-8);   /* 32px */
+  --space-container-xl: var(--space-12);  /* 48px */
+
+  /* Grid Spacing */
+  --space-grid-xs: var(--space-2);        /* 8px */
+  --space-grid-sm: var(--space-3);        /* 12px */
+  --space-grid-md: var(--space-4);        /* 16px */
+  --space-grid-lg: var(--space-6);        /* 24px */
+  --space-grid-xl: var(--space-8);        /* 32px */
+
+  /* Form Spacing */
+  --space-form-xs: var(--space-1);        /* 4px */
+  --space-form-sm: var(--space-2);        /* 8px */
+  --space-form-md: var(--space-3);        /* 12px */
+  --space-form-lg: var(--space-4);         /* 16px */
+
+  /* Button Spacing */
+  --space-button-xs: var(--space-1);      /* 4px */
+  --space-button-sm: var(--space-2);      /* 8px */
+  --space-button-md: var(--space-3);      /* 12px */
+  --space-button-lg: var(--space-4);      /* 16px */
+
+  /* Icon Spacing */
+  --space-icon-xs: var(--space-1);        /* 4px */
+  --space-icon-sm: var(--space-2);        /* 8px */
+  --space-icon-md: var(--space-3);        /* 12px */
+  --space-icon-lg: var(--space-4);         /* 16px */
+
+  /* Spacer Component Tokens */
+  --spacer-xs: var(--space-1);      /* 4px */
+  --spacer-sm: var(--space-2);      /* 8px */
+  --spacer-md: var(--space-4);      /* 16px */
+  --spacer-lg: var(--space-6);      /* 24px */
+  --spacer-xl: var(--space-8);      /* 32px */
+  --spacer-2xl: var(--space-12);    /* 48px */
+  --spacer-3xl: var(--space-16);    /* 64px */
+  --spacer-4xl: var(--space-24);    /* 96px */
+  --spacer-5xl: var(--space-32);    /* 128px */
+
+  /* Responsive Spacer Tokens (Mobile First) */
+  --spacer-responsive-xs: var(--space-2);   /* 8px - Mobile */
+  --spacer-responsive-sm: var(--space-3);   /* 12px - Small */
+  --spacer-responsive-md: var(--space-4);   /* 16px - Medium */
+  --spacer-responsive-lg: var(--space-6);   /* 24px - Large */
+  --spacer-responsive-xl: var(--space-8);   /* 32px - Extra Large */
+}

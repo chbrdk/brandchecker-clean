@@ -105,7 +105,46 @@ class BatchImageProcessor:
                                             'source_file': json_file_path
                                         })
             
-            # Extract from GraphQL JSON structure
+            # Extract from GraphQL JSON structure (assets.by_library format)
+            elif 'assets' in data and 'by_library' in data['assets']:
+                for library_data in data['assets']['by_library']:
+                    library_name = library_data.get('library', 'Unknown Library')
+                    
+                    for asset in library_data.get('assets', []):
+                        asset_title = asset.get('title', 'Unknown Asset')
+                        asset_id = asset.get('id', 'unknown')
+                        
+                        # Extract preview_url (PNG/JPEG Preview)
+                        preview_url = asset.get('preview_url')
+                        if preview_url:
+                            image_data.append({
+                                'url': preview_url,
+                                'alt': asset_title,
+                                'title': asset_title,
+                                'width': asset.get('dimensions', {}).get('width'),
+                                'height': asset.get('dimensions', {}).get('height'),
+                                'source_context': f"GraphQL Asset Preview: {library_name}",
+                                'page_title': library_name,
+                                'page_url': '',
+                                'source_file': json_file_path
+                            })
+                        
+                        # Extract download_url (if it's an image)
+                        download_url = asset.get('download_url')
+                        if download_url and any(ext in download_url.lower() for ext in ['.png', '.jpg', '.jpeg', '.svg', '.gif', '.webp']):
+                            image_data.append({
+                                'url': download_url,
+                                'alt': asset_title,
+                                'title': asset_title,
+                                'width': asset.get('dimensions', {}).get('width'),
+                                'height': asset.get('dimensions', {}).get('height'),
+                                'source_context': f"GraphQL Asset Download: {library_name}",
+                                'page_title': library_name,
+                                'page_url': '',
+                                'source_file': json_file_path
+                            })
+            
+            # Extract from old GraphQL JSON structure (data.brand.assetLibraries format)
             elif 'data' in data and 'brand' in data['data']:
                 brand = data['data']['brand']
                 
@@ -156,31 +195,70 @@ class BatchImageProcessor:
         """Extract image URLs from all JSON files or use pre-extracted URLs"""
         all_images = []
         
-        # First try to use pre-extracted URLs
-        extracted_urls_file = "/shared/JSON/extracted/image_urls.json"
-        if os.path.exists(extracted_urls_file):
+        # First try to use the new GraphQL JSON with AWS credentials
+        new_graphql_file = "/shared/JSON/bosch_graphql_minimal_test_latest.json"
+        if os.path.exists(new_graphql_file):
             try:
-                with open(extracted_urls_file, 'r', encoding='utf-8') as f:
-                    urls = json.load(f)
-                
-                # Convert URLs to image info format
-                for url in urls:
-                    all_images.append({
-                        'url': url,
-                        'alt': '',
-                        'title': '',
-                        'width': None,
-                        'height': None,
-                        'source_context': 'Extracted from Brand Guidelines',
-                        'page_title': 'Brand Guidelines',
-                        'page_url': '',
-                        'source_file': extracted_urls_file
-                    })
-                
-                logger.info(f"Loaded {len(all_images)} pre-extracted image URLs")
+                logger.info(f"Processing new GraphQL file: {new_graphql_file}")
+                all_images.extend(self.extract_image_urls_from_json(new_graphql_file))
+                logger.info(f"Loaded {len(all_images)} images from new GraphQL file")
                 
             except Exception as e:
-                logger.warning(f"Failed to load pre-extracted URLs: {e}")
+                logger.warning(f"Failed to load new GraphQL file: {e}")
+        
+        # Fallback to working URLs (without AWS credentials)
+        if not all_images:
+            working_urls_file = "/shared/JSON/extracted/working_urls.json"
+            if os.path.exists(working_urls_file):
+                try:
+                    with open(working_urls_file, 'r', encoding='utf-8') as f:
+                        urls = json.load(f)
+                    
+                    # Convert URLs to image info format
+                    for url in urls:
+                        all_images.append({
+                            'url': url,
+                            'alt': '',
+                            'title': '',
+                            'width': None,
+                            'height': None,
+                            'source_context': 'GraphQL Assets (Frontify CDN)',
+                            'page_title': 'Bosch Asset Libraries',
+                            'page_url': '',
+                            'source_file': working_urls_file
+                        })
+                    
+                    logger.info(f"Loaded {len(all_images)} working URLs (Frontify CDN only)")
+                    
+                except Exception as e:
+                    logger.warning(f"Failed to load working URLs: {e}")
+        
+        # Fallback to all extracted URLs if working URLs not available
+        if not all_images:
+            extracted_urls_file = "/shared/JSON/extracted/image_urls.json"
+            if os.path.exists(extracted_urls_file):
+                try:
+                    with open(extracted_urls_file, 'r', encoding='utf-8') as f:
+                        urls = json.load(f)
+                    
+                    # Convert URLs to image info format
+                    for url in urls:
+                        all_images.append({
+                            'url': url,
+                            'alt': '',
+                            'title': '',
+                            'width': None,
+                            'height': None,
+                            'source_context': 'Extracted from Brand Guidelines',
+                            'page_title': 'Brand Guidelines',
+                            'page_url': '',
+                            'source_file': extracted_urls_file
+                        })
+                    
+                    logger.info(f"Loaded {len(all_images)} pre-extracted image URLs (fallback)")
+                    
+                except Exception as e:
+                    logger.warning(f"Failed to load pre-extracted URLs: {e}")
         
         # Fallback to extracting from JSON files
         if not all_images:
@@ -514,7 +592,7 @@ async def main():
         
         # Process images in batch
         logger.info(f"Processing {len(images)} images...")
-        stats = await processor.process_images_batch(images, max_images=100)
+        stats = await processor.process_images_batch(images, max_images=10000)  # Process all available images
         
         # Print final statistics
         logger.info("\n=== BATCH PROCESSING COMPLETE ===")

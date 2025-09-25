@@ -1,0 +1,11 @@
+{
+  "total_urls": 4994,
+  "working_urls": 468,
+  "filtered_out": 4526,
+  "filter_reasons": {
+    "aws_credentials": 4523,
+    "aws_signature": 4523,
+    "aws_algorithm": 4523,
+    "removed_keys": 4523
+  }
+}

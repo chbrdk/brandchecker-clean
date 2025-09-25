@@ -1,0 +1,189 @@
+/* BrandChecker Design Tokens - Layout & Sizing */
+
+:root {
+  /* Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Container Max Widths */
+  --container-xs: 20rem;      /* 320px */
+  --container-sm: 24rem;      /* 384px */
+  --container-md: 28rem;      /* 448px */
+  --container-lg: 32rem;      /* 512px */
+  --container-xl: 36rem;      /* 576px */
+  --container-2xl: 42rem;     /* 672px */
+  --container-3xl: 48rem;    /* 768px */
+  --container-4xl: 56rem;    /* 896px */
+  --container-5xl: 64rem;    /* 1024px */
+  --container-6xl: 72rem;    /* 1152px */
+  --container-7xl: 80rem;    /* 1280px */
+  --container-full: 100%;
+
+  /* Component Sizes */
+  --size-xs: 1.5rem;         /* 24px */
+  --size-sm: 2rem;           /* 32px */
+  --size-md: 2.5rem;         /* 40px */
+  --size-lg: 3rem;           /* 48px */
+  --size-xl: 3.5rem;         /* 56px */
+  --size-2xl: 4rem;          /* 64px */
+  --size-3xl: 5rem;          /* 80px */
+  --size-4xl: 6rem;          /* 96px */
+  --size-5xl: 8rem;          /* 128px */
+  --size-6xl: 10rem;         /* 160px */
+  --size-7xl: 12rem;         /* 192px */
+  --size-8xl: 16rem;         /* 256px */
+  --size-9xl: 20rem;         /* 320px */
+
+  /* Button Heights */
+  --height-button-xs: var(--size-xs);     /* 24px */
+  --height-button-sm: var(--size-sm);     /* 32px */
+  --height-button-md: var(--size-md);     /* 40px */
+  --height-button-lg: var(--size-lg);     /* 48px */
+  --height-button-xl: var(--size-xl);     /* 56px */
+
+  /* Input Heights */
+  --height-input-xs: var(--size-xs);      /* 24px */
+  --height-input-sm: var(--size-sm);      /* 32px */
+  --height-input-md: var(--size-md);      /* 40px */
+  --height-input-lg: var(--size-lg);      /* 48px */
+  --height-input-xl: var(--size-xl);      /* 56px */
+
+  /* Icon Sizes */
+  --size-icon-xs: 0.75rem;    /* 12px */
+  --size-icon-sm: 1rem;       /* 16px */
+  --size-icon-md: 1.25rem;    /* 20px */
+  --size-icon-lg: 1.5rem;     /* 24px */
+  --size-icon-xl: 2rem;       /* 32px */
+  --size-icon-2xl: 2.5rem;   /* 40px */
+  --size-icon-3xl: 3rem;     /* 48px */
+
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 0.125rem;      /* 2px */
+  --radius-md: 0.25rem;       /* 4px */
+  --radius-lg: 0.375rem;      /* 6px */
+  --radius-xl: 0.5rem;        /* 8px */
+  --radius-2xl: 0.75rem;     /* 12px */
+  --radius-3xl: 1rem;         /* 16px */
+  --radius-full: 9999px;
+
+  /* Component-specific Border Radius */
+  --radius-button: var(--radius-md);
+  --radius-input: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-modal: var(--radius-xl);
+  --radius-badge: var(--radius-full);
+  --radius-avatar: var(--radius-full);
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+  /* Component-specific Shadows */
+  --shadow-button: var(--shadow-sm);
+  --shadow-button-hover: var(--shadow-md);
+  --shadow-card: var(--shadow-sm);
+  --shadow-card-hover: var(--shadow-md);
+  --shadow-modal: var(--shadow-xl);
+  --shadow-dropdown: var(--shadow-lg);
+  --shadow-tooltip: var(--shadow-md);
+
+  /* Z-Index Scale */
+  --z-index-hide: -1;
+  --z-index-auto: auto;
+  --z-index-base: 0;
+  --z-index-docked: 10;
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1100;
+  --z-index-banner: 1200;
+  --z-index-overlay: 1300;
+  --z-index-modal: 1400;
+  --z-index-popover: 1500;
+  --z-index-skiplink: 1600;
+  --z-index-toast: 1700;
+  --z-index-tooltip: 1800;
+
+  /* Transitions */
+  --transition-none: none;
+  --transition-all: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-default: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-colors: color 150ms cubic-bezier(0.4, 0, 0.2, 1), background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-opacity: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-shadow: box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Component-specific Transitions */
+  --transition-button: var(--transition-colors);
+  --transition-input: var(--transition-colors);
+  --transition-card: var(--transition-shadow);
+  --transition-modal: var(--transition-all);
+
+  /* Header Component Tokens */
+  --header-height-xs: 3.5rem;    /* 56px - Mobile */
+  --header-height-sm: 4rem;       /* 64px - Small */
+  --header-height-md: 4.5rem;     /* 72px - Medium */
+  --header-height-lg: 5rem;        /* 80px - Large */
+  --header-height-xl: 5.5rem;      /* 88px - Extra Large */
+
+  /* Navigation Tokens */
+  --nav-item-padding-xs: var(--space-2);     /* 8px - Mobile */
+  --nav-item-padding-sm: var(--space-3);     /* 12px - Small */
+  --nav-item-padding-md: var(--space-4);     /* 16px - Medium */
+  --nav-item-padding-lg: var(--space-5);     /* 20px - Large */
+  --nav-item-padding-xl: var(--space-6);     /* 24px - Extra Large */
+
+  /* Breadcrumb Tokens */
+  --breadcrumb-separator: '›';
+  --breadcrumb-gap: var(--space-2);          /* 8px */
+
+  /* Sidebar Component Tokens */
+  --sidebar-width-xs: 16rem;     /* 256px - Mobile */
+  --sidebar-width-sm: 18rem;     /* 288px - Small */
+  --sidebar-width-md: 20rem;     /* 320px - Medium */
+  --sidebar-width-lg: 24rem;     /* 384px - Large */
+  --sidebar-width-xl: 28rem;     /* 448px - Extra Large */
+
+  /* Sidebar Navigation Tokens */
+  --sidebar-nav-padding-xs: var(--space-3);     /* 12px - Mobile */
+  --sidebar-nav-padding-sm: var(--space-4);     /* 16px - Small */
+  --sidebar-nav-padding-md: var(--space-5);     /* 20px - Medium */
+  --sidebar-nav-padding-lg: var(--space-6);     /* 24px - Large */
+  --sidebar-nav-padding-xl: var(--space-8);     /* 32px - Extra Large */
+
+  /* Sidebar Item Tokens */
+  --sidebar-item-height-xs: 2.5rem;    /* 40px - Mobile */
+  --sidebar-item-height-sm: 2.75rem;   /* 44px - Small */
+  --sidebar-item-height-md: 3rem;      /* 48px - Medium */
+  --sidebar-item-height-lg: 3.25rem;    /* 52px - Large */
+  --sidebar-item-height-xl: 3.5rem;    /* 56px - Extra Large */
+
+  /* Table Component Tokens */
+  --table-row-height-xs: 2.5rem;       /* 40px - Mobile */
+  --table-row-height-sm: 3rem;         /* 48px - Small */
+  --table-row-height-md: 3.5rem;       /* 56px - Medium */
+  --table-row-height-lg: 4rem;         /* 64px - Large */
+  --table-row-height-xl: 4.5rem;       /* 72px - Extra Large */
+
+  /* Table Header Tokens */
+  --table-header-height-xs: 2.75rem;   /* 44px - Mobile */
+  --table-header-height-sm: 3.25rem;   /* 52px - Small */
+  --table-header-height-md: 3.75rem;   /* 60px - Medium */
+  --table-header-height-lg: 4.25rem;   /* 68px - Large */
+  --table-header-height-xl: 4.75rem;   /* 76px - Extra Large */
+
+  /* Table Cell Tokens */
+  --table-cell-padding-xs: var(--space-2) var(--space-3);    /* 8px 12px - Mobile */
+  --table-cell-padding-sm: var(--space-3) var(--space-4);    /* 12px 16px - Small */
+  --table-cell-padding-md: var(--space-4) var(--space-5);    /* 16px 20px - Medium */
+  --table-cell-padding-lg: var(--space-5) var(--space-6);    /* 20px 24px - Large */
+  --table-cell-padding-xl: var(--space-6) var(--space-8);    /* 24px 32px - Extra Large */
+}

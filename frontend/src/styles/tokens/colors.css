@@ -1,0 +1,133 @@
+/* BrandChecker Design Tokens - Colors */
+
+:root {
+  /* Primary Colors */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075985;
+  --color-primary-900: #0c4a6e;
+  --color-primary-950: #082f49;
+
+  /* Secondary Colors */
+  --color-secondary-50: #f8fafc;
+  --color-secondary-100: #f1f5f9;
+  --color-secondary-200: #e2e8f0;
+  --color-secondary-300: #cbd5e1;
+  --color-secondary-400: #94a3b8;
+  --color-secondary-500: #64748b;
+  --color-secondary-600: #475569;
+  --color-secondary-700: #334155;
+  --color-secondary-800: #1e293b;
+  --color-secondary-900: #0f172a;
+  --color-secondary-950: #020617;
+
+  /* Success Colors */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-900: #14532d;
+  --color-success-950: #052e16;
+
+  /* Warning Colors */
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-900: #78350f;
+  --color-warning-950: #451a03;
+
+  /* Error Colors */
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-400: #f87171;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-900: #7f1d1d;
+  --color-error-950: #450a0a;
+
+  /* Neutral Colors */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  /* Semantic Color Aliases */
+  --color-background: var(--color-neutral-0);
+  --color-background-secondary: var(--color-neutral-50);
+  --color-background-tertiary: var(--color-neutral-100);
+  
+  --color-text-primary: var(--color-neutral-900);
+  --color-text-secondary: var(--color-neutral-600);
+  --color-text-tertiary: var(--color-neutral-500);
+  --color-text-inverse: var(--color-neutral-0);
+  
+  --color-border-primary: var(--color-neutral-200);
+  --color-border-secondary: var(--color-neutral-300);
+  --color-border-focus: var(--color-primary-500);
+  
+  --color-surface-primary: var(--color-neutral-0);
+  --color-surface-secondary: var(--color-neutral-50);
+  --color-surface-elevated: var(--color-neutral-0);
+  
+  /* Brand-specific Colors (can be customized per brand) */
+  --color-brand-primary: var(--color-primary-500);
+  --color-brand-secondary: var(--color-secondary-500);
+  --color-brand-accent: var(--color-primary-600);
+  
+  /* Interactive States */
+  --color-interactive-primary: var(--color-primary-500);
+  --color-interactive-primary-hover: var(--color-primary-600);
+  --color-interactive-primary-active: var(--color-primary-700);
+  --color-interactive-primary-disabled: var(--color-neutral-300);
+  
+  --color-interactive-secondary: var(--color-secondary-500);
+  --color-interactive-secondary-hover: var(--color-secondary-600);
+  --color-interactive-secondary-active: var(--color-secondary-700);
+  --color-interactive-secondary-disabled: var(--color-neutral-300);
+  
+  /* Status Colors */
+  --color-status-success: var(--color-success-500);
+  --color-status-success-bg: var(--color-success-50);
+  --color-status-success-border: var(--color-success-200);
+  
+  --color-status-warning: var(--color-warning-500);
+  --color-status-warning-bg: var(--color-warning-50);
+  --color-status-warning-border: var(--color-warning-200);
+  
+  --color-status-error: var(--color-error-500);
+  --color-status-error-bg: var(--color-error-50);
+  --color-status-error-border: var(--color-error-200);
+  
+  --color-status-info: var(--color-primary-500);
+  --color-status-info-bg: var(--color-primary-50);
+  --color-status-info-border: var(--color-primary-200);
+}

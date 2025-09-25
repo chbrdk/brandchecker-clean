@@ -1,10 +1,10 @@
 {
-  "total_images": 471,
-  "total_metadata_entries": 671,
+  "total_images": 4994,
+  "total_metadata_entries": 9717,
   "categories": {
-    "logos": 0,
+    "logos": 122,
     "avatars": 64,
-    "brand_assets": 2,
+    "brand_assets": 8926,
     "frontify_cdn": 605,
     "other": 0
   },
@@ -12,7 +12,7 @@
     "brandguide.bosch.com": 64,
     "brandguide-bosch-test.frontify.com": 64,
     "cdn-assets-eu.frontify.com": 541,
-    "s3.eu-central-1.amazonaws.com": 2
+    "s3.eu-central-1.amazonaws.com": 9048
   },
-  "extraction_timestamp": "2025-09-24T06:31:15.134983"
+  "extraction_timestamp": "2025-09-24T14:33:09.700381"
 }

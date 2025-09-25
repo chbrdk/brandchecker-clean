@@ -1,0 +1,360 @@
+/* BrandChecker Typography Component - Mobile First & Responsive */
+
+.typography {
+  font-family: var(--font-family-sans);
+  line-height: var(--line-height-normal);
+  margin: 0;
+  padding: 0;
+  color: var(--color-text-primary);
+}
+
+/* Typography Variants */
+.typography--h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-4);
+}
+
+.typography--h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-3);
+}
+
+.typography--h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-3);
+}
+
+.typography--h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-2);
+}
+
+.typography--h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-2);
+}
+
+.typography--h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-2);
+}
+
+.typography--body {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-2);
+}
+
+.typography--caption {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-1);
+}
+
+.typography--small {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-1);
+}
+
+.typography--lead {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+  margin-bottom: var(--space-3);
+}
+
+.typography--subtitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  margin-bottom: var(--space-2);
+}
+
+/* Typography Sizes */
+.typography--size-xs {
+  font-size: var(--font-size-xs);
+}
+
+.typography--size-sm {
+  font-size: var(--font-size-sm);
+}
+
+.typography--size-base {
+  font-size: var(--font-size-base);
+}
+
+.typography--size-lg {
+  font-size: var(--font-size-lg);
+}
+
+.typography--size-xl {
+  font-size: var(--font-size-xl);
+}
+
+.typography--size-2xl {
+  font-size: var(--font-size-2xl);
+}
+
+.typography--size-3xl {
+  font-size: var(--font-size-3xl);
+}
+
+.typography--size-4xl {
+  font-size: var(--font-size-4xl);
+}
+
+.typography--size-5xl {
+  font-size: var(--font-size-5xl);
+}
+
+.typography--size-6xl {
+  font-size: var(--font-size-6xl);
+}
+
+/* Typography Weights */
+.typography--weight-light {
+  font-weight: var(--font-weight-light);
+}
+
+.typography--weight-normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.typography--weight-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.typography--weight-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.typography--weight-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.typography--weight-extrabold {
+  font-weight: var(--font-weight-extrabold);
+}
+
+/* Typography Colors */
+.typography--color-primary {
+  color: var(--color-text-primary);
+}
+
+.typography--color-secondary {
+  color: var(--color-text-secondary);
+}
+
+.typography--color-tertiary {
+  color: var(--color-text-tertiary);
+}
+
+.typography--color-success {
+  color: var(--color-status-success);
+}
+
+.typography--color-warning {
+  color: var(--color-status-warning);
+}
+
+.typography--color-error {
+  color: var(--color-status-error);
+}
+
+.typography--color-info {
+  color: var(--color-status-info);
+}
+
+.typography--color-muted {
+  color: var(--color-text-muted);
+}
+
+/* Typography Alignment */
+.typography--align-left {
+  text-align: left;
+}
+
+.typography--align-center {
+  text-align: center;
+}
+
+.typography--align-right {
+  text-align: right;
+}
+
+.typography--align-justify {
+  text-align: justify;
+}
+
+/* Typography Modifiers */
+.typography--truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.typography--uppercase {
+  text-transform: uppercase;
+}
+
+.typography--lowercase {
+  text-transform: lowercase;
+}
+
+.typography--capitalize {
+  text-transform: capitalize;
+}
+
+.typography--italic {
+  font-style: italic;
+}
+
+.typography--underline {
+  text-decoration: underline;
+}
+
+.typography--strikethrough {
+  text-decoration: line-through;
+}
+
+/* Brand Typography */
+.brand-typography {
+  font-family: var(--font-family-brand, var(--font-family-sans));
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-primary);
+}
+
+.brand-typography--brand-name {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-primary);
+  letter-spacing: -0.025em;
+}
+
+.brand-typography--brand-tagline {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand-secondary);
+  font-style: italic;
+}
+
+.brand-typography--brand-description {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+
+.brand-typography--brand-heading {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-primary);
+  letter-spacing: -0.025em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .typography--h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .typography--h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .typography--h3 {
+    font-size: var(--font-size-xl);
+  }
+
+  .typography--h4 {
+    font-size: var(--font-size-lg);
+  }
+
+  .typography--lead {
+    font-size: var(--font-size-base);
+  }
+
+  .brand-typography--brand-name {
+    font-size: var(--font-size-xl);
+  }
+
+  .brand-typography--brand-heading {
+    font-size: var(--font-size-2xl);
+  }
+}
+
+@media (max-width: 480px) {
+  .typography--h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .typography--h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .typography--h3 {
+    font-size: var(--font-size-lg);
+  }
+
+  .brand-typography--brand-name {
+    font-size: var(--font-size-lg);
+  }
+
+  .brand-typography--brand-heading {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .typography {
+    color: black !important;
+  }
+
+  .typography--color-primary,
+  .typography--color-secondary,
+  .typography--color-tertiary {
+    color: black !important;
+  }
+
+  .typography--color-success,
+  .typography--color-warning,
+  .typography--color-error,
+  .typography--color-info {
+    color: black !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .typography {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .typography--color-muted {
+    color: var(--color-text-secondary);
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .typography {
+    transition: none;
+  }
+}

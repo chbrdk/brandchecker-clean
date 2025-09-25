@@ -158,7 +158,7 @@ services:
     networks:
       - brandchecker_network
 
-  llm-api-service:
+  brandchecker-llm-api:
     image: python:3.11-slim
     container_name: brandchecker-llm-api
     restart: unless-stopped
@@ -192,7 +192,7 @@ services:
       brandchecker-postgres:
         condition: service_healthy
 
-  image-api-service:
+  brandchecker-image-api:
     image: python:3.11-slim
     container_name: brandchecker-image-api
     restart: unless-stopped
@@ -210,6 +210,41 @@ services:
       sh -c "apt-get update && apt-get install -y libpq-dev gcc && 
              pip install 'flask[async]' flask-cors openai aiohttp numpy &&
              python image_api.py"
+    networks:
+      - brandchecker_network
+
+# Frontend temporär deaktiviert - läuft lokal
+  # brandchecker-frontend:
+  #   build: ./frontend
+  #   container_name: brandchecker-frontend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "127.0.0.1:8003:80"  # Frontend auf Port 8003
+  #   environment:
+  #     - NODE_ENV=production
+  #     - REACT_APP_API_URL=http://brandchecker-python:8000
+  #     - REACT_APP_LLM_API_URL=http://brandchecker-llm-api:8001
+  #     - REACT_APP_IMAGE_API_URL=http://brandchecker-image-api:8002
+  #   networks:
+  #     - brandchecker_network
+  #   depends_on:
+  #     - brandchecker-python
+  #     - brandchecker-llm-api
+  #     - brandchecker-image-api
+
+  brandchecker-storybook:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.storybook
+    container_name: brandchecker-storybook
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8004:6006"  # Storybook auf Port 8004
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/.storybook:/app/.storybook:ro
     networks:
       - brandchecker_network
 

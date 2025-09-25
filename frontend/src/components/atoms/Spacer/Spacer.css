@@ -1,0 +1,320 @@
+/* BrandChecker Spacer Component - Mobile First & Responsive */
+
+/* Base Spacer */
+.spacer {
+  display: block;
+  flex-shrink: 0;
+  
+  /* Default size (mobile first) */
+  --spacer-size-xs: var(--spacer-md);
+  --spacer-size-sm: var(--spacer-md);
+  --spacer-size-md: var(--spacer-md);
+  --spacer-size-lg: var(--spacer-md);
+  --spacer-size-xl: var(--spacer-md);
+  --spacer-size-2xl: var(--spacer-md);
+}
+
+/* Direction variants */
+.spacer--vertical {
+  width: 0;
+  height: var(--spacer-size-xs);
+}
+
+.spacer--horizontal {
+  width: var(--spacer-size-xs);
+  height: 0;
+}
+
+.spacer--both {
+  width: var(--spacer-size-xs);
+  height: var(--spacer-size-xs);
+}
+
+/* Size variants */
+.spacer--xs {
+  --spacer-size-xs: var(--spacer-xs);
+  --spacer-size-sm: var(--spacer-xs);
+  --spacer-size-md: var(--spacer-xs);
+  --spacer-size-lg: var(--spacer-xs);
+  --spacer-size-xl: var(--spacer-xs);
+  --spacer-size-2xl: var(--spacer-xs);
+}
+
+.spacer--sm {
+  --spacer-size-xs: var(--spacer-sm);
+  --spacer-size-sm: var(--spacer-sm);
+  --spacer-size-md: var(--spacer-sm);
+  --spacer-size-lg: var(--spacer-sm);
+  --spacer-size-xl: var(--spacer-sm);
+  --spacer-size-2xl: var(--spacer-sm);
+}
+
+.spacer--md {
+  --spacer-size-xs: var(--spacer-md);
+  --spacer-size-sm: var(--spacer-md);
+  --spacer-size-md: var(--spacer-md);
+  --spacer-size-lg: var(--spacer-md);
+  --spacer-size-xl: var(--spacer-md);
+  --spacer-size-2xl: var(--spacer-md);
+}
+
+.spacer--lg {
+  --spacer-size-xs: var(--spacer-lg);
+  --spacer-size-sm: var(--spacer-lg);
+  --spacer-size-md: var(--spacer-lg);
+  --spacer-size-lg: var(--spacer-lg);
+  --spacer-size-xl: var(--spacer-lg);
+  --spacer-size-2xl: var(--spacer-lg);
+}
+
+.spacer--xl {
+  --spacer-size-xs: var(--spacer-xl);
+  --spacer-size-sm: var(--spacer-xl);
+  --spacer-size-md: var(--spacer-xl);
+  --spacer-size-lg: var(--spacer-xl);
+  --spacer-size-xl: var(--spacer-xl);
+  --spacer-size-2xl: var(--spacer-xl);
+}
+
+.spacer--2xl {
+  --spacer-size-xs: var(--spacer-2xl);
+  --spacer-size-sm: var(--spacer-2xl);
+  --spacer-size-md: var(--spacer-2xl);
+  --spacer-size-lg: var(--spacer-2xl);
+  --spacer-size-xl: var(--spacer-2xl);
+  --spacer-size-2xl: var(--spacer-2xl);
+}
+
+.spacer--3xl {
+  --spacer-size-xs: var(--spacer-3xl);
+  --spacer-size-sm: var(--spacer-3xl);
+  --spacer-size-md: var(--spacer-3xl);
+  --spacer-size-lg: var(--spacer-3xl);
+  --spacer-size-xl: var(--spacer-3xl);
+  --spacer-size-2xl: var(--spacer-3xl);
+}
+
+.spacer--4xl {
+  --spacer-size-xs: var(--spacer-4xl);
+  --spacer-size-sm: var(--spacer-4xl);
+  --spacer-size-md: var(--spacer-4xl);
+  --spacer-size-lg: var(--spacer-4xl);
+  --spacer-size-xl: var(--spacer-4xl);
+  --spacer-size-2xl: var(--spacer-4xl);
+}
+
+.spacer--5xl {
+  --spacer-size-xs: var(--spacer-5xl);
+  --spacer-size-sm: var(--spacer-5xl);
+  --spacer-size-md: var(--spacer-5xl);
+  --spacer-size-lg: var(--spacer-5xl);
+  --spacer-size-xl: var(--spacer-5xl);
+  --spacer-size-2xl: var(--spacer-5xl);
+}
+
+/* Responsive Breakpoints - Mobile First Approach */
+
+/* Small screens (640px+) */
+@media (min-width: 640px) {
+  .spacer--vertical {
+    height: var(--spacer-size-sm);
+  }
+  
+  .spacer--horizontal {
+    width: var(--spacer-size-sm);
+  }
+  
+  .spacer--both {
+    width: var(--spacer-size-sm);
+    height: var(--spacer-size-sm);
+  }
+}
+
+/* Medium screens (768px+) */
+@media (min-width: 768px) {
+  .spacer--vertical {
+    height: var(--spacer-size-md);
+  }
+  
+  .spacer--horizontal {
+    width: var(--spacer-size-md);
+  }
+  
+  .spacer--both {
+    width: var(--spacer-size-md);
+    height: var(--spacer-size-md);
+  }
+}
+
+/* Large screens (1024px+) */
+@media (min-width: 1024px) {
+  .spacer--vertical {
+    height: var(--spacer-size-lg);
+  }
+  
+  .spacer--horizontal {
+    width: var(--spacer-size-lg);
+  }
+  
+  .spacer--both {
+    width: var(--spacer-size-lg);
+    height: var(--spacer-size-lg);
+  }
+}
+
+/* Extra large screens (1280px+) */
+@media (min-width: 1280px) {
+  .spacer--vertical {
+    height: var(--spacer-size-xl);
+  }
+  
+  .spacer--horizontal {
+    width: var(--spacer-size-xl);
+  }
+  
+  .spacer--both {
+    width: var(--spacer-size-xl);
+    height: var(--spacer-size-xl);
+  }
+}
+
+/* 2XL screens (1536px+) */
+@media (min-width: 1536px) {
+  .spacer--vertical {
+    height: var(--spacer-size-2xl);
+  }
+  
+  .spacer--horizontal {
+    width: var(--spacer-size-2xl);
+  }
+  
+  .spacer--both {
+    width: var(--spacer-size-2xl);
+    height: var(--spacer-size-2xl);
+  }
+}
+
+/* Utility Classes for Common Patterns */
+
+/* Section Spacers */
+.spacer--section {
+  --spacer-size-xs: var(--spacer-lg);
+  --spacer-size-sm: var(--spacer-xl);
+  --spacer-size-md: var(--spacer-2xl);
+  --spacer-size-lg: var(--spacer-3xl);
+  --spacer-size-xl: var(--spacer-4xl);
+  --spacer-size-2xl: var(--spacer-5xl);
+}
+
+/* Component Spacers */
+.spacer--component {
+  --spacer-size-xs: var(--spacer-sm);
+  --spacer-size-sm: var(--spacer-md);
+  --spacer-size-md: var(--spacer-lg);
+  --spacer-size-lg: var(--spacer-xl);
+  --spacer-size-xl: var(--spacer-xl);
+  --spacer-size-2xl: var(--spacer-xl);
+}
+
+/* Form Spacers */
+.spacer--form {
+  --spacer-size-xs: var(--spacer-xs);
+  --spacer-size-sm: var(--spacer-sm);
+  --spacer-size-md: var(--spacer-md);
+  --spacer-size-lg: var(--spacer-lg);
+  --spacer-size-xl: var(--spacer-lg);
+  --spacer-size-2xl: var(--spacer-lg);
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 639px) {
+  /* Reduce large spacers on mobile for better space utilization */
+  .spacer--3xl,
+  .spacer--4xl,
+  .spacer--5xl {
+    --spacer-size-xs: var(--spacer-xl);
+  }
+  
+  /* Ensure minimum touch targets */
+  .spacer--xs {
+    --spacer-size-xs: var(--spacer-sm);
+  }
+}
+
+/* Touch-friendly spacing for mobile */
+@media (max-width: 768px) {
+  .spacer--section {
+    --spacer-size-xs: var(--spacer-md);
+  }
+  
+  .spacer--component {
+    --spacer-size-xs: var(--spacer-sm);
+  }
+}
+
+/* High DPI screen optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .spacer {
+    /* Ensure crisp rendering on high DPI screens */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Print styles */
+@media print {
+  .spacer {
+    /* Reduce spacers in print for better space utilization */
+    --spacer-size-xs: var(--spacer-xs);
+    --spacer-size-sm: var(--spacer-xs);
+    --spacer-size-md: var(--spacer-sm);
+    --spacer-size-lg: var(--spacer-sm);
+    --spacer-size-xl: var(--spacer-md);
+    --spacer-size-2xl: var(--spacer-md);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .spacer {
+    transition: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .spacer {
+    /* Ensure spacers are visible in high contrast mode */
+    background-color: transparent;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .spacer {
+    /* Dark mode specific adjustments if needed */
+  }
+}
+
+/* Performance optimizations */
+.spacer {
+  contain: layout;
+  will-change: auto;
+}
+
+/* Accessibility improvements */
+.spacer[aria-hidden="true"] {
+  /* Ensure screen readers ignore spacers */
+  pointer-events: none;
+}
+
+/* Flexbox integration */
+.spacer--flex {
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+/* Grid integration */
+.spacer--grid {
+  grid-area: auto;
+}

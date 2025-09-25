@@ -1,0 +1,350 @@
+/* BrandChecker Chip Component - Mobile First & Responsive */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-full);
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  transition: var(--transition-colors);
+  border: 1px solid transparent;
+  background-color: var(--color-neutral-100);
+  color: var(--color-text-secondary);
+  outline: none;
+}
+
+/* Interactive States */
+.chip--interactive {
+  cursor: pointer;
+}
+
+.chip--clickable {
+  cursor: pointer;
+}
+
+.chip--clickable:hover {
+  background-color: var(--color-neutral-200);
+  color: var(--color-text-primary);
+}
+
+.chip--clickable:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.chip--clickable:active {
+  transform: translateY(1px);
+}
+
+/* Selected State */
+.chip--selected {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-200);
+}
+
+.chip--selected:hover {
+  background-color: var(--color-primary-200);
+}
+
+/* Disabled State */
+.chip--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Removable State */
+.chip--removable {
+  padding-right: var(--space-1);
+}
+
+/* Variants */
+.chip--default {
+  background-color: var(--color-neutral-100);
+  color: var(--color-text-secondary);
+  border-color: var(--color-neutral-200);
+}
+
+.chip--primary {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  border-color: var(--color-primary-200);
+}
+
+.chip--primary:hover {
+  background-color: var(--color-primary-200);
+}
+
+.chip--secondary {
+  background-color: var(--color-secondary-100);
+  color: var(--color-secondary-700);
+  border-color: var(--color-secondary-200);
+}
+
+.chip--secondary:hover {
+  background-color: var(--color-secondary-200);
+}
+
+.chip--success {
+  background-color: var(--color-success-100);
+  color: var(--color-success-700);
+  border-color: var(--color-success-200);
+}
+
+.chip--success:hover {
+  background-color: var(--color-success-200);
+}
+
+.chip--warning {
+  background-color: var(--color-warning-100);
+  color: var(--color-warning-700);
+  border-color: var(--color-warning-200);
+}
+
+.chip--warning:hover {
+  background-color: var(--color-warning-200);
+}
+
+.chip--error {
+  background-color: var(--color-error-100);
+  color: var(--color-error-700);
+  border-color: var(--color-error-200);
+}
+
+.chip--error:hover {
+  background-color: var(--color-error-200);
+}
+
+.chip--info {
+  background-color: var(--color-info-100);
+  color: var(--color-info-700);
+  border-color: var(--color-info-200);
+}
+
+.chip--info:hover {
+  background-color: var(--color-info-200);
+}
+
+/* Sizes */
+.chip--small {
+  padding: var(--space-0-5) var(--space-1);
+  font-size: var(--font-size-xs);
+  gap: var(--space-0-5);
+}
+
+.chip--medium {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  gap: var(--space-1);
+}
+
+.chip--large {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  gap: var(--space-1);
+}
+
+/* Chip Elements */
+.chip__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-neutral-200);
+}
+
+.chip--small .chip__avatar {
+  width: 1rem;
+  height: 1rem;
+}
+
+.chip--large .chip__avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.chip__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  opacity: 0.8;
+}
+
+.chip__icon--left {
+  margin-right: var(--space-0-5);
+}
+
+.chip__icon--right {
+  margin-left: var(--space-0-5);
+}
+
+.chip__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chip__remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin-left: var(--space-1);
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  transition: var(--transition-colors);
+  outline: none;
+}
+
+.chip__remove:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+.chip__remove:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+.chip--small .chip__remove {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.chip--large .chip__remove {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Chip Group */
+.chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chip-group--align-left {
+  justify-content: flex-start;
+}
+
+.chip-group--align-center {
+  justify-content: center;
+}
+
+.chip-group--align-right {
+  justify-content: flex-end;
+}
+
+.chip-group--spacing-none {
+  gap: 0;
+}
+
+.chip-group--spacing-small {
+  gap: var(--space-1);
+}
+
+.chip-group--spacing-medium {
+  gap: var(--space-2);
+}
+
+.chip-group--spacing-large {
+  gap: var(--space-3);
+}
+
+.chip-group--wrap {
+  flex-wrap: wrap;
+}
+
+.chip-group:not(.chip-group--wrap) {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chip {
+    font-size: var(--font-size-xs);
+    padding: var(--space-0-5) var(--space-1);
+  }
+
+  .chip--large {
+    font-size: var(--font-size-sm);
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .chip-group {
+    gap: var(--space-1);
+  }
+}
+
+/* Focus Management */
+.chip:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Animation */
+.chip {
+  transition: all 0.2s ease-in-out;
+}
+
+.chip--clickable:active {
+  transform: scale(0.98);
+}
+
+/* Brand-specific Variants */
+.chip--brand-primary {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-800);
+  border-color: var(--color-primary-200);
+}
+
+.chip--brand-secondary {
+  background-color: var(--color-secondary-50);
+  color: var(--color-secondary-800);
+  border-color: var(--color-secondary-200);
+}
+
+/* Status Variants for Brand Analysis */
+.chip--compliant {
+  background-color: var(--color-success-50);
+  color: var(--color-success-800);
+  border-color: var(--color-success-200);
+}
+
+.chip--non-compliant {
+  background-color: var(--color-error-50);
+  color: var(--color-error-800);
+  border-color: var(--color-error-200);
+}
+
+.chip--warning {
+  background-color: var(--color-warning-50);
+  color: var(--color-warning-800);
+  border-color: var(--color-warning-200);
+}
+
+.chip--pending {
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-700);
+  border-color: var(--color-neutral-200);
+}

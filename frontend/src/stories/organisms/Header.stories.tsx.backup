@@ -1,0 +1,614 @@
+import type { Meta, StoryObj } from '@storybook/react';
+import { 
+  Header, 
+  HeaderBrand, 
+  HeaderNavigation, 
+  HeaderActions, 
+  NavItem, 
+  Breadcrumb 
+} from '../../components/organisms';
+import { Button } from '../../components/atoms/Button';
+import { Input } from '../../components/atoms/Input';
+import { Badge } from '../../components/atoms/Badge';
+
+const meta: Meta<typeof Header> = {
+  title: 'Organisms/Header',
+  component: Header,
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        component: 'Responsive header component with mobile-first navigation, brand integration, and flexible actions.',
+      },
+    },
+  },
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['default', 'transparent', 'elevated'],
+      description: 'Header variant style',
+    },
+    fixed: {
+      control: 'boolean',
+      description: 'Fixed header position',
+    },
+    height: {
+      control: 'select',
+      options: ['xs', 'sm', 'md', 'lg', 'xl'],
+      description: 'Header height',
+    },
+  },
+  tags: ['autodocs'],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// Helper component for demo content
+const DemoContent = () => (
+  <div style={{ 
+    padding: '40px 20px', 
+    textAlign: 'center',
+    backgroundColor: '#f9fafb',
+    minHeight: '400px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    gap: '20px'
+  }}>
+    <h2 style={{ margin: 0, color: '#1f2937' }}>Page Content</h2>
+    <p style={{ margin: 0, color: '#6b7280' }}>
+      This is the main content area. Resize your browser to see responsive behavior.
+    </p>
+  </div>
+);
+
+// Basic Header
+export const Default: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand 
+          title="BrandChecker" 
+          subtitle="Brand Analysis Platform"
+        />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small">Login</Button>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+// BrandChecker Header with Logo
+export const BrandCheckerHeader: Story = {
+  render: () => (
+    <div>
+      <Header variant="elevated" height="lg">
+        <HeaderBrand 
+          logo={
+            <div style={{
+              width: '32px',
+              height: '32px',
+              backgroundColor: '#3b82f6',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}>
+              BC
+            </div>
+          }
+          title="BrandChecker" 
+          subtitle="AI-Powered Brand Analysis"
+        />
+        <HeaderNavigation>
+          <NavItem href="#" active icon="📊">Dashboard</NavItem>
+          <NavItem href="#" icon="🎨">Color Analysis</NavItem>
+          <NavItem href="#" icon="🔤">Font Analysis</NavItem>
+          <NavItem href="#" icon="📷">Logo Detection</NavItem>
+          <NavItem href="#" icon="📄">Documents</NavItem>
+          <NavItem href="#" icon="⚙️">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Input 
+            type="search" 
+            placeholder="Search brands..." 
+            size="small"
+            style={{ minWidth: '200px' }}
+          />
+          <Button variant="ghost" size="small">🔔</Button>
+          <Button variant="ghost" size="small">👤</Button>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+// Mobile Navigation Demo
+export const MobileNavigation: Story = {
+  render: () => (
+    <div>
+      <Header height="sm">
+        <HeaderBrand title="BrandChecker" />
+        <HeaderNavigation mobileMenu="dropdown">
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="ghost" size="small">🔔</Button>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+
+// Header with Breadcrumbs
+export const WithBreadcrumbs: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand title="BrandChecker" />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Breadcrumb 
+            items={[
+              { label: 'Dashboard', href: '#' },
+              { label: 'Analysis', href: '#' },
+              { label: 'Color Analysis', active: true }
+            ]}
+          />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+// Fixed Header
+export const FixedHeader: Story = {
+  render: () => (
+    <div>
+      <Header fixed variant="elevated">
+        <HeaderBrand title="BrandChecker" />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="primary" size="small">Get Started</Button>
+        </HeaderActions>
+      </Header>
+      <div style={{ paddingTop: '80px' }}>
+        <DemoContent />
+        <div style={{ height: '800px', backgroundColor: '#f3f4f6', padding: '40px' }}>
+          <h3>Scroll to see fixed header behavior</h3>
+          <p>This content demonstrates the fixed header staying in place while scrolling.</p>
+        </div>
+      </div>
+    </div>
+  ),
+};
+
+// Transparent Header
+export const TransparentHeader: Story = {
+  render: () => (
+    <div style={{ 
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      minHeight: '100vh'
+    }}>
+      <Header variant="transparent">
+        <HeaderBrand 
+          title="BrandChecker" 
+          subtitle="Premium Brand Analysis"
+        />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small">Login</Button>
+          <Button variant="primary" size="small">Sign Up</Button>
+        </HeaderActions>
+      </Header>
+      <div style={{ 
+        padding: '80px 20px', 
+        textAlign: 'center',
+        color: 'white'
+      }}>
+        <h1 style={{ margin: '0 0 20px 0', fontSize: '48px', fontWeight: 'bold' }}>
+          Welcome to BrandChecker
+        </h1>
+        <p style={{ margin: '0 0 40px 0', fontSize: '20px', opacity: 0.9 }}>
+          AI-powered brand analysis and compliance checking
+        </p>
+        <Button variant="primary" size="large">Start Analysis</Button>
+      </div>
+    </div>
+  ),
+};
+
+// Navigation with Badges
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand title="BrandChecker" />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge="3">Analysis</NavItem>
+          <NavItem href="#" badge="12">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <NavItem href="#" badge="5" icon="🔔">Notifications</NavItem>
+          <Button variant="ghost" size="small">👤</Button>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+// Different Heights
+export const DifferentHeights: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div>
+        <h3 style={{ marginBottom: '10px' }}>Extra Small (XS)</h3>
+        <Header height="xs">
+          <HeaderBrand title="BrandChecker" />
+          <HeaderNavigation>
+            <NavItem href="#" active>Dashboard</NavItem>
+            <NavItem href="#">Analysis</NavItem>
+          </HeaderNavigation>
+          <HeaderActions>
+            <Button variant="ghost" size="small">Menu</Button>
+          </HeaderActions>
+        </Header>
+      </div>
+      
+      <div>
+        <h3 style={{ marginBottom: '10px' }}>Small (SM)</h3>
+        <Header height="sm">
+          <HeaderBrand title="BrandChecker" />
+          <HeaderNavigation>
+            <NavItem href="#" active>Dashboard</NavItem>
+            <NavItem href="#">Analysis</NavItem>
+          </HeaderNavigation>
+          <HeaderActions>
+            <Button variant="ghost" size="small">Menu</Button>
+          </HeaderActions>
+        </Header>
+      </div>
+      
+      <div>
+        <h3 style={{ marginBottom: '10px' }}>Medium (MD) - Default</h3>
+        <Header height="md">
+          <HeaderBrand title="BrandChecker" />
+          <HeaderNavigation>
+            <NavItem href="#" active>Dashboard</NavItem>
+            <NavItem href="#">Analysis</NavItem>
+          </HeaderNavigation>
+          <HeaderActions>
+            <Button variant="ghost" size="small">Menu</Button>
+          </HeaderActions>
+        </Header>
+      </div>
+      
+      <div>
+        <h3 style={{ marginBottom: '10px' }}>Large (LG)</h3>
+        <Header height="lg">
+          <HeaderBrand title="BrandChecker" />
+          <HeaderNavigation>
+            <NavItem href="#" active>Dashboard</NavItem>
+            <NavItem href="#">Analysis</NavItem>
+          </HeaderNavigation>
+          <HeaderActions>
+            <Button variant="ghost" size="small">Menu</Button>
+          </HeaderActions>
+        </Header>
+      </div>
+      
+      <div>
+        <h3 style={{ marginBottom: '10px' }}>Extra Large (XL)</h3>
+        <Header height="xl">
+          <HeaderBrand title="BrandChecker" />
+          <HeaderNavigation>
+            <NavItem href="#" active>Dashboard</NavItem>
+            <NavItem href="#">Analysis</NavItem>
+          </HeaderNavigation>
+          <HeaderActions>
+            <Button variant="ghost" size="small">Menu</Button>
+          </HeaderActions>
+        </Header>
+      </div>
+    </div>
+  ),
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+// Complex Header Layout
+export const ComplexLayout: Story = {
+  render: () => (
+    <div>
+      <Header variant="elevated" height="lg">
+        <HeaderBrand 
+          logo={
+            <div style={{
+              width: '40px',
+              height: '40px',
+              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '20px',
+              fontWeight: 'bold',
+              boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
+            }}>
+              BC
+            </div>
+          }
+          title="BrandChecker Pro" 
+          subtitle="Enterprise Brand Analysis"
+        />
+        <HeaderNavigation>
+          <NavItem href="#" active icon="📊">Dashboard</NavItem>
+          <NavItem href="#" icon="🎨" badge="2">Color Analysis</NavItem>
+          <NavItem href="#" icon="🔤">Font Analysis</NavItem>
+          <NavItem href="#" icon="📷">Logo Detection</NavItem>
+          <NavItem href="#" icon="📄" badge="5">Documents</NavItem>
+          <NavItem href="#" icon="📈">Reports</NavItem>
+          <NavItem href="#" icon="⚙️">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Input 
+            type="search" 
+            placeholder="Search brands, colors, fonts..." 
+            size="small"
+            style={{ minWidth: '250px' }}
+          />
+          <NavItem href="#" icon="🔔" badge="3">Notifications</NavItem>
+          <NavItem href="#" icon="💬">Support</NavItem>
+          <div style={{ 
+            width: '32px', 
+            height: '32px', 
+            borderRadius: '50%', 
+            backgroundColor: '#3b82f6',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'white',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}>
+            JD
+          </div>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+// Playground
+export const Playground: Story = {
+  args: {
+    variant: 'default',
+    fixed: false,
+    height: 'md',
+  },
+  render: (args) => (
+    <div>
+      <Header {...args}>
+        <HeaderBrand title="BrandChecker" />
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#">Analysis</NavItem>
+          <NavItem href="#">Documents</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small">Login</Button>
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
+
+export const WithBadges: Story = {
+  render: () => (
+    <div>
+      <Header>
+        <HeaderBrand>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '32px', height: '32px', backgroundColor: '#0ea5e9', borderRadius: '4px' }} />
+            <span style={{ fontWeight: '600', fontSize: '18px' }}>BrandChecker</span>
+          </div>
+        </HeaderBrand>
+        <HeaderNavigation>
+          <NavItem href="#" active>Dashboard</NavItem>
+          <NavItem href="#" badge={5} badgeVariant="primary" badgeType="count">Analysis</NavItem>
+          <NavItem href="#" badge="New" badgeVariant="success" badgeType="status">Documents</NavItem>
+          <NavItem href="#" badge={12} badgeVariant="error" badgeType="notification">Notifications</NavItem>
+          <NavItem href="#">Settings</NavItem>
+        </HeaderNavigation>
+        <HeaderActions>
+          <Button variant="secondary" size="small" iconName="user">Profile</Button>
+          <Button variant="ghost" size="small" iconName="settings" />
+        </HeaderActions>
+      </Header>
+      <DemoContent />
+    </div>
+  ),
+};
