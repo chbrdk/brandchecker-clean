@@ -322,70 +322,14 @@ function App() {
             clearInterval(pollInterval);
             
             if (statusData.status === 'completed') {
-              // Extraktionsdaten parsen und formatieren
+              // Extraktionsdaten für strukturierte Darstellung vorbereiten
               const results = statusData.results;
-              let resultsMessage = `**Extraktion abgeschlossen**\n\nDie Datei wurde erfolgreich verarbeitet.\n\n`;
+              let resultsMessage = `**Extraktion abgeschlossen**\n\nDie Datei wurde erfolgreich verarbeitet.`;
               
+              // Minimale Text-Nachricht, da die strukturierte Darstellung über messageData erfolgt
               if (results && results.extraction_data) {
-                const extractionData = results.extraction_data;
                 const summary = results.summary;
-                
-                // Zusammenfassung der extrahierten Elemente
-                resultsMessage += `**Extrahierte Elemente:**\n`;
-                resultsMessage += `- Farben: ${summary.total_colors}\n`;
-                resultsMessage += `- Schriftarten: ${summary.total_fonts}\n`;
-                resultsMessage += `- Seiten: ${summary.total_pages}\n`;
-                resultsMessage += `- Bilder: ${summary.total_images}\n`;
-                resultsMessage += `- Vektoren: ${summary.total_vectors}\n`;
-                resultsMessage += `- Farbraum: ${summary.primary_color_space}\n`;
-                resultsMessage += `- Farbmanagement: ${summary.color_management_strategy}\n\n`;
-                
-                // Farb-Analyse
-                if (extractionData.color_analysis && extractionData.color_analysis.colors) {
-                  const colors = extractionData.color_analysis.colors.slice(0, 5); // Top 5 Farben
-                  resultsMessage += `**Hauptfarben:**\n`;
-                  colors.forEach((color: any, index: number) => {
-                    resultsMessage += `${index + 1}. ${color.hex} (${color.usage_percentage.toFixed(1)}%)\n`;
-                  });
-                  resultsMessage += `\n`;
-                }
-                
-                // Font-Analyse
-                if (extractionData.font_analysis && extractionData.font_analysis.fonts) {
-                  const fonts = extractionData.font_analysis.fonts.slice(0, 3); // Top 3 Fonts
-                  resultsMessage += `**Hauptschriftarten:**\n`;
-                  fonts.forEach((font: any, index: number) => {
-                    resultsMessage += `${index + 1}. ${font.name} (${font.size}pt, ${font.usage_count}x)\n`;
-                  });
-                  resultsMessage += `\n`;
-                }
-                
-                // Layout-Analyse
-                if (extractionData.layout_analysis && extractionData.layout_analysis.alignment_analysis) {
-                  const alignment = extractionData.layout_analysis.alignment_analysis.alignment_counts;
-                  resultsMessage += `**Textausrichtung:**\n`;
-                  resultsMessage += `- Links: ${alignment.left || 0}\n`;
-                  resultsMessage += `- Rechts: ${alignment.right || 0}\n`;
-                  resultsMessage += `- Zentriert: ${alignment.center || 0}\n`;
-                  resultsMessage += `- Blocksatz: ${alignment.justified || 0}\n\n`;
-                }
-                
-                // Font-Insights
-                if (extractionData.font_insights && extractionData.font_insights.font_families) {
-                  resultsMessage += `**Font-Familien:** ${extractionData.font_insights.font_families.count}\n`;
-                  if (extractionData.font_insights.most_used_font) {
-                    resultsMessage += `**Häufigste Schriftart:** ${extractionData.font_insights.most_used_font.name}\n`;
-                  }
-                  resultsMessage += `\n`;
-                }
-                
-                // Verarbeitungszeit
-                resultsMessage += `**Verarbeitungszeit:** ${results.processing_time}\n`;
-                resultsMessage += `**Datei:** ${results.original_filename}`;
-              } else {
-                resultsMessage += `**Status:** Erfolgreich\n`;
-                resultsMessage += `**Fortschritt:** 100%\n`;
-                resultsMessage += `**Verarbeitungszeit:** ${statusData.message}`;
+                resultsMessage += `\n\n**Extrahierte Elemente:** ${summary.total_colors} Farben, ${summary.total_fonts} Fonts, ${summary.total_pages} Seiten, ${summary.total_images} Bilder`;
               }
               
               const analysisSuccessMessage: ChatMessage = {

@@ -5,11 +5,12 @@ import { TrafficLight } from '../../atoms/TrafficLight';
 import { Chart } from '../../atoms/Chart';
 import { RecommendationList } from '../../atoms/RecommendationList';
 import { ResultCard } from '../../atoms/ResultCard';
+import { ColorSwatch } from '../../atoms/ColorSwatch';
 import { AnalysisResults } from '../AnalysisResults';
 import type { AnalysisResult } from '../../atoms/ResultCard';
+import type { ColorData } from '../../atoms/ColorSwatch';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import './ChatCard.css';
 
 /**
@@ -109,7 +110,199 @@ export const ChatCard = ({
 
   // Render rich content based on message type
   const renderRichContent = () => {
-    if (!messageData) return null;
+    console.log('🔍 ChatCard renderRichContent:', { messageType, messageData });
+    
+    if (!messageData) {
+      console.log('❌ No messageData provided');
+      return null;
+    }
+
+    // Handle extraction-results messageType directly
+    if (messageType === 'extraction-results') {
+      const extractionResultsData = messageData as any;
+      console.log('🎨 Rendering extraction-results:', extractionResultsData);
+      return (
+        <div className="chat-card__rich-content chat-card__extraction-results">
+          {/* Summary ResultCard */}
+          {extractionResultsData.summary && (
+            <ResultCard
+              type="summary"
+              variant="compact"
+              title="Extraktionszusammenfassung"
+              description="Übersicht der extrahierten Elemente aus dem PDF"
+              size="sm"
+              showScore={false}
+              showStatus={false}
+              showChart={false}
+              showRecommendations={false}
+              showDetails={true}
+              tags={[
+                `${extractionResultsData.summary.total_colors} Farben`,
+                `${extractionResultsData.summary.total_fonts} Fonts`,
+                `${extractionResultsData.summary.total_pages} Seiten`,
+                `${extractionResultsData.summary.total_images} Bilder`
+              ]}
+              category="PDF-Extraktion"
+              timestamp={new Date()}
+            />
+          )}
+          
+          {/* Color Analysis with ColorSwatch */}
+          {extractionResultsData.extraction_data?.color_analysis?.colors && (
+            <div style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-grey-800)',
+              borderRadius: 'var(--border-radius-md)',
+              padding: 'var(--space-4)',
+              margin: 'var(--space-2) 0'
+            }}>
+              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
+                🎨 Farbanalyse
+              </Typography>
+              <Typography variant="body" size="xs" color="secondary" style={{ marginBottom: 'var(--space-3)' }}>
+                Hauptfarben aus dem PDF-Dokument
+              </Typography>
+              <div style={{ 
+                display: 'flex', 
+                gap: 'var(--space-2)', 
+                flexWrap: 'wrap'
+              }}>
+                {extractionResultsData.extraction_data.color_analysis.colors.slice(0, 5).map((color: any, index: number) => {
+                  const colorData: ColorData = {
+                    hex: color.hex,
+                    name: color.name,
+                    usage_percentage: color.usage_percentage,
+                    usage_count: color.usage_count,
+                    rgb: color.rgb,
+                    description: color.description
+                  };
+                  
+                  return (
+                    <ColorSwatch
+                      key={index}
+                      color={colorData}
+                      size="sm"
+                      showName={true}
+                      showPercentage={true}
+                      showCount={false}
+                      showRgb={false}
+                      showDescription={false}
+                      onClick={(color) => console.log('Color clicked:', color)}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+          
+          {/* Font Analysis */}
+          {extractionResultsData.extraction_data?.font_analysis?.fonts && (
+            <div style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-grey-800)',
+              borderRadius: 'var(--border-radius-md)',
+              padding: 'var(--space-4)',
+              margin: 'var(--space-2) 0'
+            }}>
+              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
+                🔤 Schriftarten-Analyse
+              </Typography>
+              <Typography variant="body" size="xs" color="secondary" style={{ marginBottom: 'var(--space-3)' }}>
+                Verwendete Schriftarten im PDF-Dokument
+              </Typography>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                gap: 'var(--space-2)'
+              }}>
+                {extractionResultsData.extraction_data.font_analysis.fonts.slice(0, 3).map((font: any, index: number) => (
+                  <div key={index} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: 'var(--space-2)',
+                    backgroundColor: 'var(--color-background)',
+                    borderRadius: 'var(--border-radius-sm)',
+                    border: '1px solid var(--color-grey-800)'
+                  }}>
+                    <div>
+                      <Typography variant="body" size="xs" weight="medium">
+                        {font.name}
+                      </Typography>
+                      <Typography variant="caption" size="xs" color="secondary">
+                        {font.size}pt
+                      </Typography>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <Typography variant="body" size="xs" weight="semibold">
+                        {font.usage_count}x
+                      </Typography>
+                      <Typography variant="caption" size="xs" color="secondary">
+                        verwendet
+                      </Typography>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {/* Layout Analysis */}
+          {extractionResultsData.extraction_data?.layout_analysis?.alignment_analysis && (
+            <div style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-grey-800)',
+              borderRadius: 'var(--border-radius-md)',
+              padding: 'var(--space-4)',
+              margin: 'var(--space-2) 0'
+            }}>
+              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
+                📐 Layout-Analyse
+              </Typography>
+              <Typography variant="body" size="xs" color="secondary" style={{ marginBottom: 'var(--space-3)' }}>
+                Textausrichtung und Struktur
+              </Typography>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+                gap: 'var(--space-2)'
+              }}>
+                <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                  <Typography variant="body" size="sm" weight="semibold">
+                    {extractionResultsData.extraction_data.layout_analysis.alignment_analysis.alignment_counts.left || 0}
+                  </Typography>
+                  <Typography variant="caption" size="xs" color="secondary">Links</Typography>
+                </div>
+                <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                  <Typography variant="body" size="sm" weight="semibold">
+                    {extractionResultsData.extraction_data.layout_analysis.alignment_analysis.alignment_counts.right || 0}
+                  </Typography>
+                  <Typography variant="caption" size="xs" color="secondary">Rechts</Typography>
+                </div>
+                <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                  <Typography variant="body" size="sm" weight="semibold">
+                    {extractionResultsData.extraction_data.layout_analysis.alignment_analysis.alignment_counts.center || 0}
+                  </Typography>
+                  <Typography variant="caption" size="xs" color="secondary">Zentriert</Typography>
+                </div>
+                <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                  <Typography variant="body" size="sm" weight="semibold">
+                    {extractionResultsData.extraction_data.layout_analysis.alignment_analysis.alignment_counts.justified || 0}
+                  </Typography>
+                  <Typography variant="caption" size="xs" color="secondary">Blocksatz</Typography>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // Handle other message types with messageData.type
+    if (!messageData.type) {
+      console.log('❌ No messageData.type provided');
+      return null;
+    }
 
     switch (messageData.type) {
       case 'score':
@@ -223,136 +416,16 @@ export const ChatCard = ({
         );
 
       case 'analysis-results':
-        const analysisResultsData = messageData;
+        const analysisResultsData = messageData as any;
         return (
           <div className="chat-card__rich-content chat-card__analysis-results">
             <AnalysisResults results={analysisResultsData} />
           </div>
         );
 
-      case 'extraction-results':
-        const extractionResultsData = messageData;
-        return (
-          <div className="chat-card__rich-content chat-card__extraction-results">
-            <div style={{
-              backgroundColor: 'var(--color-background-secondary)',
-              border: '1px solid var(--color-grey-800)',
-              borderRadius: 'var(--border-radius-md)',
-              padding: 'var(--space-4)',
-              margin: 'var(--space-2) 0'
-            }}>
-              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
-                Extraktionsergebnisse
-              </Typography>
-              
-              {extractionResultsData.extraction_data && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                  {/* Zusammenfassung */}
-                  {extractionResultsData.summary && (
-                    <div>
-                      <Typography variant="body" size="xs" weight="semibold" color="primary">
-                        Zusammenfassung
-                      </Typography>
-                      <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
-                        gap: 'var(--space-2)',
-                        marginTop: 'var(--space-2)'
-                      }}>
-                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
-                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_colors}</Typography>
-                          <Typography variant="caption" size="xs" color="secondary">Farben</Typography>
-                        </div>
-                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
-                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_fonts}</Typography>
-                          <Typography variant="caption" size="xs" color="secondary">Fonts</Typography>
-                        </div>
-                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
-                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_pages}</Typography>
-                          <Typography variant="caption" size="xs" color="secondary">Seiten</Typography>
-                        </div>
-                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
-                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_images}</Typography>
-                          <Typography variant="caption" size="xs" color="secondary">Bilder</Typography>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Hauptfarben */}
-                  {extractionResultsData.extraction_data.color_analysis?.colors && (
-                    <div>
-                      <Typography variant="body" size="xs" weight="semibold" color="primary">
-                        Hauptfarben
-                      </Typography>
-                      <div style={{ 
-                        display: 'flex', 
-                        gap: 'var(--space-2)', 
-                        marginTop: 'var(--space-2)',
-                        flexWrap: 'wrap'
-                      }}>
-                        {extractionResultsData.extraction_data.color_analysis.colors.slice(0, 5).map((color: any, index: number) => (
-                          <div key={index} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 'var(--space-1)',
-                            padding: 'var(--space-1) var(--space-2)',
-                            backgroundColor: 'var(--color-background)',
-                            borderRadius: 'var(--border-radius-sm)',
-                            border: '1px solid var(--color-grey-800)'
-                          }}>
-                            <div style={{
-                              width: '16px',
-                              height: '16px',
-                              backgroundColor: color.hex,
-                              borderRadius: 'var(--border-radius-sm)',
-                              border: '1px solid var(--color-grey-800)'
-                            }} />
-                            <Typography variant="caption" size="xs">
-                              {color.hex}
-                            </Typography>
-                            <Typography variant="caption" size="xs" color="secondary">
-                              ({color.usage_percentage.toFixed(1)}%)
-                            </Typography>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Hauptschriftarten */}
-                  {extractionResultsData.extraction_data.font_analysis?.fonts && (
-                    <div>
-                      <Typography variant="body" size="xs" weight="semibold" color="primary">
-                        Hauptschriftarten
-                      </Typography>
-                      <div style={{ marginTop: 'var(--space-2)' }}>
-                        {extractionResultsData.extraction_data.font_analysis.fonts.slice(0, 3).map((font: any, index: number) => (
-                          <div key={index} style={{
-                            padding: 'var(--space-2)',
-                            backgroundColor: 'var(--color-background)',
-                            borderRadius: 'var(--border-radius-sm)',
-                            marginBottom: 'var(--space-1)',
-                            border: '1px solid var(--color-grey-800)'
-                          }}>
-                            <Typography variant="body" size="xs" weight="medium">
-                              {font.name}
-                            </Typography>
-                            <Typography variant="caption" size="xs" color="secondary">
-                              {font.size}pt • {font.usage_count}x verwendet
-                            </Typography>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        );
 
       default:
+        console.log('❌ Unknown messageType:', messageData.type);
         return null;
     }
   };
