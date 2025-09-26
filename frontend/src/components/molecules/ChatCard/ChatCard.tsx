@@ -5,6 +5,9 @@ import { Chart } from '../../atoms/Chart';
 import { RecommendationList } from '../../atoms/RecommendationList';
 import { ResultCard } from '../../atoms/ResultCard';
 import type { AnalysisResult } from '../../atoms/ResultCard';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import './ChatCard.css';
 
 /**
@@ -245,9 +248,72 @@ export const ChatCard = ({
         </div>
         
         <div className="chat-card__message">
-          <Typography variant="body" size="sm" color="primary">
-            {message}
-          </Typography>
+          {message.includes('<img') ? (
+            // Direktes HTML-Rendering für Nachrichten mit Bildern
+            <div 
+              style={{
+                fontSize: 'var(--font-size-xs)',
+                lineHeight: 'var(--line-height-tight)',
+                color: 'var(--color-text-primary)',
+                fontFamily: 'var(--font-family-sans)'
+              }}
+              dangerouslySetInnerHTML={{ 
+                __html: message
+                  .replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: var(--font-weight-semibold);">$1</strong>')
+                  .replace(/\n/g, '<br>')
+              }} 
+            />
+          ) : (
+            // Markdown-Rendering für normale Nachrichten
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                p: ({ children }) => (
+                  <Typography variant="body" size="xs" color="primary">
+                    {children}
+                  </Typography>
+                ),
+                strong: ({ children }) => (
+                  <Typography variant="body" size="xs" weight="semibold" color="primary">
+                    {children}
+                  </Typography>
+                ),
+                code: ({ children }) => (
+                  <Typography 
+                    variant="body" 
+                    size="xs" 
+                    color="primary"
+                    style={{ 
+                      backgroundColor: 'var(--color-background-secondary)',
+                      padding: 'var(--space-1) var(--space-2)',
+                      borderRadius: 'var(--border-radius-sm)',
+                      fontFamily: 'var(--font-family-mono)',
+                      display: 'inline-block'
+                    }}
+                  >
+                    {children}
+                  </Typography>
+                ),
+                pre: ({ children }) => (
+                  <div style={{ 
+                    backgroundColor: 'var(--color-background-secondary)',
+                    padding: 'var(--space-3)',
+                    borderRadius: 'var(--border-radius-md)',
+                    fontFamily: 'var(--font-family-mono)',
+                    fontSize: 'var(--font-size-xs)',
+                    overflow: 'auto',
+                    margin: 'var(--space-2) 0'
+                  }}>
+                    <Typography variant="body" size="xs" color="primary">
+                      {children}
+                    </Typography>
+                  </div>
+                )
+              }}
+            >
+              {message}
+            </ReactMarkdown>
+          )}
         </div>
 
         {renderRichContent()}

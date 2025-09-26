@@ -57,8 +57,10 @@ export const BrandCheckerChat = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = (text: string) => {
-    if (!text.trim()) return;
+  const handleSendMessage = (text: string, files?: File[]) => {
+    console.log('🔵 BrandCheckerChat handleSendMessage called with:', { text, files: files?.map(f => f.name) });
+    
+    if (!text.trim() && (!files || files.length === 0)) return;
 
     const newUserMessage: ChatMessage = {
       id: `msg-${Date.now()}-user`,
@@ -70,7 +72,7 @@ export const BrandCheckerChat = ({
     };
 
     setMessages((prevMessages) => [...prevMessages, newUserMessage]);
-    onSendMessage?.(text);
+    onSendMessage?.(text, files);
 
     // Simulate AI response for demo
     if (!onSendMessage) {
@@ -91,34 +93,8 @@ export const BrandCheckerChat = ({
   };
 
   const handleFilesUpload = (files: File[]) => {
-    const fileNames = files.map(file => file.name).join(', ');
-    const uploadMessage: ChatMessage = {
-      id: `msg-${Date.now()}-upload`,
-      message: `Uploaded files: ${fileNames}`,
-      sender: 'user',
-      senderName: 'You',
-      avatarInitials: 'U',
-      timestamp: new Date(),
-    };
-    setMessages((prevMessages) => [...prevMessages, uploadMessage]);
+    // KEINE Chat-Card erstellen - nur an Parent weiterleiten
     onFilesUpload?.(files);
-
-    // Simulate AI response for demo
-    if (!onFilesUpload) {
-      setIsAgentTyping(true);
-      setTimeout(() => {
-        const aiResponse: ChatMessage = {
-          id: `msg-${Date.now()}-agent-upload-ack`,
-          message: `Received your files. I'll start analyzing them now.`,
-          sender: 'agent',
-          senderName: 'BrandChecker AI',
-          avatarInitials: 'AI',
-          timestamp: new Date(),
-        };
-        setMessages((prevMessages) => [...prevMessages, aiResponse]);
-        setIsAgentTyping(false);
-      }, 2000);
-    }
   };
 
   return (

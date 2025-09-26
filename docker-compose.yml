@@ -263,6 +263,21 @@ services:
     networks:
       - brandchecker_network
 
+  brandchecker-upload:
+    build:
+      context: .
+      dockerfile: Dockerfile.upload
+    container_name: brandchecker-upload
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8006:8006"  # Upload Service auf Port 8006
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - ./shared:/shared
+    networks:
+      - brandchecker_network
+
 volumes:
   brandchecker_n8n_data:
     driver: local

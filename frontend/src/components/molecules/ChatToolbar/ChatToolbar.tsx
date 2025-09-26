@@ -20,6 +20,8 @@ export interface ChatToolbarProps {
   placeholder?: string;
   /** Callback when a message is sent */
   onMessageSend?: (message: string, files?: File[]) => void;
+  /** Alternative callback name for message sending (backward compatibility) */
+  onSendMessage?: (message: string, files?: File[]) => void;
   /** Callback when files are uploaded */
   onFilesUpload?: (files: File[]) => void;
   /** Additional CSS class */
@@ -60,10 +62,13 @@ export const ChatToolbar = ({
   disabled = false,
   placeholder = "Ask about your brand...",
   onMessageSend,
+  onSendMessage,
   onFilesUpload,
   className = '',
   ...props
 }: ChatToolbarProps) => {
+  // Extrahiere HTML-Props von Event-Handler-Props
+  const { ...htmlProps } = props;
   const [message, setMessage] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
@@ -81,7 +86,9 @@ export const ChatToolbar = ({
   // Handle send message
   const handleSendMessage = () => {
     if (message.trim() || uploadedFiles.length > 0) {
-      onMessageSend?.(message, uploadedFiles);
+      // Use onSendMessage if available, otherwise fallback to onMessageSend
+      const sendHandler = onSendMessage || onMessageSend;
+      sendHandler?.(message, uploadedFiles);
       setMessage('');
       setUploadedFiles([]);
     }
@@ -99,7 +106,7 @@ export const ChatToolbar = ({
   const canSend = !disabled && !loading && (message.trim() || uploadedFiles.length > 0);
 
   return (
-    <div className={`chat-toolbar ${className}`} {...props}>
+    <div className={`chat-toolbar ${className}`} {...htmlProps}>
       {/* File Upload Button */}
       <div className="chat-toolbar__upload">
         <Button
