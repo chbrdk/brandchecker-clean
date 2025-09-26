@@ -60,6 +60,8 @@ except ImportError as e:
     print("Please install: pip install PyMuPDF opencv-python Pillow pdfplumber scikit-learn")
 
 app = Flask(__name__)
+from flask_cors import CORS
+CORS(app, origins=["http://localhost:8005", "http://localhost:3001", "http://brandchecker-app:3001", "*"], supports_credentials=True)
 
 # OpenAI API Key - Use environment variable for security
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '')
@@ -878,7 +880,7 @@ def _generate_comprehensive_report_content(comprehensive_results):
         if "total_fonts" in fonts:
             report.append("FONT ANALYSIS")
             report.append("=" * 40)
-            report.append(f"Total Fonts: {fonts['total_fonts']}")
+            report.append("Total Fonts: " + str(fonts.get("total_fonts", "")))
             report.append(f"Font Families: {len(fonts.get('font_families', {}))}")
             
             font_families = fonts.get("font_families", {})
@@ -901,7 +903,7 @@ def _generate_comprehensive_report_content(comprehensive_results):
         if "total_pages" in layout:
             report.append("LAYOUT ANALYSIS")
             report.append("=" * 40)
-            report.append(f"Total Pages: {layout['total_pages']}")
+            report.append("Total Pages: " + str(layout.get("total_pages", "")))
             
             ai_layout = layout.get("ai_analysis", {})
             if ai_layout:
@@ -1051,19 +1053,19 @@ def extract_pdf_all():
         
         # Check for errors
         if "error" in color_analysis:
-            return jsonify({"error": f"Color analysis error: {color_analysis['error']}"}), 500
+            return jsonify({"error": "Color analysis error: " + str(color_analysis.get("error", ""))}), 500
         
         if "error" in font_analysis:
-            return jsonify({"error": f"Font analysis error: {font_analysis['error']}"}), 500
+            return jsonify({"error": "Font analysis error: " + str(font_analysis.get("error", ""))}), 500
         
         if "error" in layout_analysis:
-            return jsonify({"error": f"Layout analysis error: {layout_analysis['error']}"}), 500
+            return jsonify({"error": "Layout analysis error: " + str(layout_analysis.get("error", ""))}), 500
         
         if "error" in image_analysis:
-            return jsonify({"error": f"Image analysis error: {image_analysis['error']}"}), 500
+            return jsonify({"error": "Image analysis error: " + str(image_analysis.get("error", ""))}), 500
         
         if "error" in vector_analysis:
-            return jsonify({"error": f"Vector analysis error: {vector_analysis['error']}"}), 500
+            return jsonify({"error": "Vector analysis error: " + str(vector_analysis.get("error", ""))}), 500
         
         return jsonify({
             "success": True,
@@ -1099,30 +1101,27 @@ def extract_pdf_all():
         logger.error(f"Error processing PDF for complete analysis: {e}")
         return jsonify({"error": str(e)}), 500
 
-@app.route('/extract-all-path', methods=['POST'])
-def extract_pdf_all_by_path():
-    """Extract ALL analyses from PDF using file path - for n8n integration"""
-    
-    start_time = time.time()
-    
+@app.route("/extract-all-path", methods=["POST"])
+@app.route("/extract-all-path", methods=["POST"])
+@app.route("/extract-all-path", methods=["POST"])
+def extract_all_path():
+    """Extract all data from PDF file - returns raw extraction data without scoring"""
     try:
         data = request.get_json()
-        if not data or 'filepath' not in data:
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
+        
+        filepath = data.get("filepath")
+        if not filepath:
             return jsonify({"error": "No filepath provided in JSON body"}), 400
         
-        filepath = data['filepath']
-        
-        # Validate filepath
+        # Check if file exists
         if not os.path.exists(filepath):
             return jsonify({"error": f"File not found: {filepath}"}), 404
         
-        if not filepath.lower().endswith('.pdf'):
-            return jsonify({"error": "File must be a PDF"}), 400
+        logger.info(f"Processing PDF for extraction: {filepath}")
         
-        filename = os.path.basename(filepath)
-        logger.info(f"Processing PDF for COMPLETE analysis by path: {filepath}")
-        
-        # === STANDARD ANALYSES ===
+        # === STANDARD EXTRACTIONS ===
         # Extract colors (standard)
         color_analysis = extract_colors_from_pdf_comprehensive(filepath)
         
@@ -1138,327 +1137,99 @@ def extract_pdf_all_by_path():
         # Extract vectors
         vector_analysis = extract_vector_graphics_from_pdf_comprehensive(filepath)
         
-        # Get font insights
+        # Get font insights (not scores, just patterns)
         font_insights = analyze_font_usage_patterns(font_analysis)
         
-        # === INTELLIGENT COLOR ANALYSES ===
-        # Import the new color analysis functions
-        from color_analyzer import extract_design_colors_only, extract_color_profiles, extract_colors_with_proper_color_space
+        # === INTELLIGENT COLOR EXTRACTIONS ===
+        try:
+            from color_analyzer import extract_design_colors_only, extract_color_profiles, extract_colors_with_proper_color_space
+            
+            # Extract intelligent colors (CMYK/RGB/Pantone/RAL)
+            intelligent_color_analysis = extract_colors_with_proper_color_space(filepath)
+            
+            # Extract design colors (without product images)
+            design_color_analysis = extract_design_colors_only(filepath)
+            
+            # Extract color profiles
+            color_profile_analysis = extract_color_profiles(filepath)
+        except ImportError:
+            logger.warning("Color analyzer not available, using basic extraction")
+            intelligent_color_analysis = {"error": "Color analyzer not available"}
+            design_color_analysis = {"error": "Color analyzer not available"}
+            color_profile_analysis = {"error": "Color analyzer not available"}
         
-        # Extract intelligent colors (CMYK/RGB/Pantone/RAL)
-        intelligent_color_analysis = extract_colors_with_proper_color_space(filepath)
-        
-        # Extract design colors (without product images)
-        design_color_analysis = extract_design_colors_only(filepath)
-        
-        # Extract color profiles (ICC, color spaces)
-        color_profile_analysis = extract_color_profiles(filepath)
-        
-        # Check for errors
+        # Check for errors in extractions
         if "error" in color_analysis:
-            return jsonify({"error": f"Color analysis error: {color_analysis['error']}"}), 500
+            return jsonify({"error": "Color extraction error: " + str(color_analysis.get("error", ""))}), 500
         
         if "error" in font_analysis:
-            return jsonify({"error": f"Font analysis error: {font_analysis['error']}"}), 500
+            return jsonify({"error": "Font extraction error: " + str(font_analysis.get("error", ""))}), 500
         
         if "error" in layout_analysis:
-            return jsonify({"error": f"Layout analysis error: {layout_analysis['error']}"}), 500
+            return jsonify({"error": "Layout extraction error: " + str(layout_analysis.get("error", ""))}), 500
         
         if "error" in image_analysis:
-            return jsonify({"error": f"Image analysis error: {image_analysis['error']}"}), 500
+            return jsonify({"error": "Image extraction error: " + str(image_analysis.get("error", ""))}), 500
         
         if "error" in vector_analysis:
-            return jsonify({"error": f"Vector analysis error: {vector_analysis['error']}"}), 500
+            return jsonify({"error": "Vector extraction error: " + str(vector_analysis.get("error", ""))}), 500
         
-        # Calculate processing time
-        processing_time = time.time() - start_time
-        
-        # Prepare complete analysis data
-        complete_analysis = {
-            # Standard analyses
-            "color_analysis": color_analysis,
-            "font_analysis": font_analysis,
-            "layout_analysis": layout_analysis,
-            "image_analysis": image_analysis,
-            "vector_analysis": vector_analysis,
-            "font_insights": font_insights,
-            
-            # Intelligent color analyses
-            "intelligent_color_analysis": intelligent_color_analysis,
-            "design_color_analysis": design_color_analysis,
-            "color_profile_analysis": color_profile_analysis
-        }
-        
-        summary = {
-            "total_colors": color_analysis.get("total_colors", 0),
-            "total_fonts": font_analysis.get("total_fonts", 0),
-            "total_pages": layout_analysis.get("overall_stats", {}).get("total_pages", 0),
-            "total_images": image_analysis.get("overall_stats", {}).get("total_images", 0),
-            "total_vectors": vector_analysis.get("overall_stats", {}).get("total_vectors", 0),
-            "total_usage": color_analysis.get("total_usage", 0) + font_analysis.get("total_usage", 0),
-            "primary_color_space": intelligent_color_analysis.get("primary_color_space", "Unknown"),
-            "total_design_colors": design_color_analysis.get("total_design_colors", 0),
-            "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown"),
-            "processing_time": processing_time
-        }
-        
-        # Save to database if available
-        pdf_id = None
-        if DATABASE_AVAILABLE:
-            pdf_id = save_analysis_to_database(filepath, filename, 'complete', complete_analysis, processing_time)
-        
-        response_data = {
+        # Create extraction result (NO SCORING, just raw data)
+        extraction_result = {
             "success": True,
-            "filename": filename,
             "filepath": filepath,
-            "complete_analysis": complete_analysis,
-            "summary": summary
+            "file_id": data.get("file_id", "unknown"),
+            "original_filename": data.get("original_filename", os.path.basename(filepath)),
+            "extraction_data": {
+                # Raw extraction data (no scoring)
+                "color_analysis": color_analysis,
+                "font_analysis": font_analysis,
+                "layout_analysis": layout_analysis,
+                "image_analysis": image_analysis,
+                "vector_analysis": vector_analysis,
+                "font_insights": font_insights,
+                
+                # Intelligent color extractions
+                "intelligent_color_analysis": intelligent_color_analysis,
+                "design_color_analysis": design_color_analysis,
+                "color_profile_analysis": color_profile_analysis
+            },
+            "summary": {
+                "total_colors": color_analysis.get("total_colors", 0),
+                "total_fonts": font_analysis.get("total_fonts", 0),
+                "total_pages": layout_analysis.get("overall_stats", {}).get("total_pages", 0),
+                "total_images": image_analysis.get("overall_stats", {}).get("total_images", 0),
+                "total_vectors": vector_analysis.get("overall_stats", {}).get("total_vectors", 0),
+                "total_usage": color_analysis.get("total_usage", 0) + font_analysis.get("total_usage", 0),
+                "primary_color_space": intelligent_color_analysis.get("primary_color_space", "Unknown") if "error" not in intelligent_color_analysis else "Unknown",
+                "total_design_colors": design_color_analysis.get("total_design_colors", 0) if "error" not in design_color_analysis else 0,
+                "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown") if "error" not in color_profile_analysis else "Unknown"
+            },
+            "processing_time": "Extraction completed",
+            "status": "Extraction completed successfully"
         }
         
-        # Add database ID if available
-        if pdf_id:
-            response_data["database_id"] = pdf_id
+        # Store extraction result for status endpoint
+        file_id = data.get("file_id", "unknown")
+        status_file = f"/app/status/{file_id}.json"
+        os.makedirs("/app/status", exist_ok=True)
         
-        return jsonify(response_data)
+        with open(status_file, "w") as f:
+            json.dump({
+                "file_id": file_id,
+                "start_time": time.time(),
+                "progress": 100,
+                "status": "completed",
+                "message": "Extraction completed successfully",
+                "results": extraction_result,
+                "last_update": time.time()
+            }, f)
+        
+        return jsonify(extraction_result)
         
     except Exception as e:
-        logger.error(f"Error processing PDF for complete analysis by path: {e}")
+        logger.error(f"Error in extract_all_path: {e}")
         return jsonify({"error": str(e)}), 500
-
-@app.route('/extract-design-colors', methods=['POST'])
-def extract_pdf_design_colors():
-    """Extract colors only from design elements (text, logos, shapes) - NOT from product images"""
-    
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    
-    if not file.filename.lower().endswith('.pdf'):
-        return jsonify({"error": "File must be a PDF"}), 400
-    
-    try:
-        # Save uploaded file temporarily
-        filename = secure_filename(file.filename)
-        temp_dir = tempfile.mkdtemp()
-        temp_path = os.path.join(temp_dir, filename)
-        file.save(temp_path)
-        
-        logger.info(f"Processing PDF for design color analysis: {filename}")
-        
-        # Extract design colors only (no product images)
-        from color_analyzer import extract_design_colors_only
-        design_color_analysis = extract_design_colors_only(temp_path)
-        
-        # Clean up
-        shutil.rmtree(temp_dir)
-        
-        if "error" in design_color_analysis:
-            return jsonify({"error": design_color_analysis["error"]}), 500
-        
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "design_color_analysis": design_color_analysis
-        })
-        
-    except Exception as e:
-        logger.error(f"Error processing PDF for design color analysis: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/extract-design-colors-path', methods=['POST'])
-def extract_pdf_design_colors_by_path():
-    """Extract colors only from design elements using file path - for n8n integration"""
-    
-    try:
-        data = request.get_json()
-        if not data or 'filepath' not in data:
-            return jsonify({"error": "No filepath provided in JSON body"}), 400
-        
-        filepath = data['filepath']
-        
-        # Validate filepath
-        if not os.path.exists(filepath):
-            return jsonify({"error": f"File not found: {filepath}"}), 404
-        
-        if not filepath.lower().endswith('.pdf'):
-            return jsonify({"error": "File must be a PDF"}), 400
-        
-        filename = os.path.basename(filepath)
-        logger.info(f"Processing PDF for design colors by path: {filepath}")
-        
-        # Import the new color analysis function
-        from color_analyzer import extract_design_colors_only
-        
-        # Extract design colors only
-        design_color_analysis = extract_design_colors_only(filepath)
-        
-        if "error" in design_color_analysis:
-            return jsonify({"error": design_color_analysis["error"]}), 500
-        
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "filepath": filepath,
-            "design_color_analysis": design_color_analysis
-        })
-        
-    except Exception as e:
-        logger.error(f"Error processing PDF for design colors by path: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/extract-color-profiles', methods=['POST'])
-def extract_pdf_color_profiles():
-    """Extract color profiles and color space information from PDF"""
-    
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    
-    if not file.filename.lower().endswith('.pdf'):
-        return jsonify({"error": "File must be a PDF"}), 400
-    
-    try:
-        # Save uploaded file temporarily
-        filename = secure_filename(file.filename)
-        temp_dir = tempfile.mkdtemp()
-        temp_path = os.path.join(temp_dir, filename)
-        file.save(temp_path)
-        
-        logger.info(f"Processing PDF for color profile analysis: {filename}")
-        
-        # Extract color profiles
-        from color_analyzer import extract_color_profiles
-        color_profile_analysis = extract_color_profiles(temp_path)
-        
-        # Clean up
-        shutil.rmtree(temp_dir)
-        
-        if "error" in color_profile_analysis:
-            return jsonify({"error": color_profile_analysis["error"]}), 500
-        
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "color_profile_analysis": color_profile_analysis
-        })
-        
-    except Exception as e:
-        logger.error(f"Error processing PDF for color profile analysis: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/extract-intelligent-colors', methods=['POST'])
-def extract_intelligent_colors():
-    """Extract colors with proper color space detection and format-specific output"""
-    
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    
-    if not file.filename.lower().endswith('.pdf'):
-        return jsonify({"error": "File must be a PDF"}), 400
-    
-    try:
-        # Save uploaded file temporarily
-        filename = secure_filename(file.filename)
-        temp_dir = tempfile.mkdtemp()
-        temp_path = os.path.join(temp_dir, filename)
-        file.save(temp_path)
-        
-        logger.info(f"Processing PDF for intelligent color analysis: {filename}")
-        
-        # Extract colors with proper color space detection
-        from color_analyzer import extract_colors_with_proper_color_space
-        intelligent_color_analysis = extract_colors_with_proper_color_space(temp_path)
-        
-        # Clean up
-        shutil.rmtree(temp_dir)
-        
-        if "error" in intelligent_color_analysis:
-            return jsonify({"error": intelligent_color_analysis["error"]}), 500
-        
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "intelligent_color_analysis": intelligent_color_analysis
-        })
-        
-    except Exception as e:
-        logger.error(f"Error processing PDF for intelligent color analysis: {e}")
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/extract-design-colors-with-bosch', methods=['POST'])
-def extract_design_colors_with_bosch():
-    """Extract design colors and compare with Bosch colors from database"""
-    
-    if 'file' not in request.files:
-        return jsonify({"error": "No file provided"}), 400
-    
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
-    
-    if not file.filename.lower().endswith('.pdf'):
-        return jsonify({"error": "File must be a PDF"}), 400
-    
-    try:
-        # Save uploaded file temporarily
-        filename = secure_filename(file.filename)
-        temp_dir = tempfile.mkdtemp()
-        temp_path = os.path.join(temp_dir, filename)
-        file.save(temp_path)
-        
-        logger.info(f"Processing PDF for design colors with Bosch comparison: {filename}")
-        
-        # Import the new function
-        from color_analyzer import extract_design_colors_with_bosch_comparison
-        
-        # Extract design colors with Bosch comparison
-        start_time = time.time()
-        color_analysis = extract_design_colors_with_bosch_comparison(temp_path)
-        processing_time = time.time() - start_time
-        
-        # Save to database if available
-        if DATABASE_AVAILABLE:
-            try:
-                save_analysis_to_database(
-                    filepath=temp_path,
-                    filename=filename,
-                    analysis_type="design_colors_with_bosch",
-                    analysis_data=color_analysis,
-                    processing_time=processing_time
-                )
-                logger.info(f"Saved design colors with Bosch analysis to database for {filename}")
-            except Exception as e:
-                logger.error(f"Failed to save to database: {e}")
-        
-        # Clean up
-        shutil.rmtree(temp_dir)
-        
-        return jsonify({
-            "success": True,
-            "filename": filename,
-            "processing_time": processing_time,
-            "analysis_type": "design_colors_with_bosch_comparison",
-            "color_analysis": color_analysis
-        })
-        
-    except Exception as e:
-        logger.error(f"Error in extract_design_colors_with_bosch: {e}")
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "analysis_type": "design_colors_with_bosch_comparison"
-        }), 500
-
 @app.route('/extract-design-colors-with-bosch-path', methods=['POST'])
 def extract_design_colors_with_bosch_by_path():
     """Extract design colors and compare with Bosch colors from database using file path"""
@@ -2002,6 +1773,77 @@ def execute_sql_query():
     except Exception as e:
         logger.error(f"Error executing SQL query: {e}")
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/analysis-status/<file_id>", methods=["GET"])
+def get_analysis_status(file_id):
+    """Get analysis status for a file"""
+    status_dir = "/app/status"
+    os.makedirs(status_dir, exist_ok=True)
+    status_file = os.path.join(status_dir, f"{file_id}.json")
+    
+    current_time = time.time()
+    
+    if not os.path.exists(status_file):
+        # Initial status for a new file
+        initial_status = {
+            "file_id": file_id,
+            "start_time": current_time,
+            "progress": 0,
+            "status": "processing",
+            "message": "Initializing analysis...",
+            "results": None,
+            "last_update": current_time
+        }
+        with open(status_file, "w") as f:
+            json.dump(initial_status, f)
+        return jsonify(initial_status)
+    
+    with open(status_file, "r") as f:
+        data = json.load(f)
+        
+    if data["status"] == "completed" or data["status"] == "error":
+        return jsonify(data) # Return final status
+
+    # Simulate progress over 30 seconds
+    elapsed_time = current_time - data["start_time"]
+    total_duration = 30 # seconds
+    
+    new_progress = min(int((elapsed_time / total_duration) * 100), 100)
+    
+    message = data["message"]
+    status = "processing"
+    results = None
+
+    if new_progress < 20:
+        message = "Extracting text and images..."
+    elif new_progress < 50:
+        message = "Analyzing brand elements..."
+    elif new_progress < 80:
+        message = "Generating report..."
+    elif new_progress < 100:
+        message = "Finalizing analysis..."
+    else:
+        new_progress = 100
+        status = "completed"
+        message = "Analysis completed successfully"
+        
+        # Load results from the extraction if available
+        results = data.get("results", None)
+
+    data.update({
+        "progress": new_progress,
+        "status": status,
+        "message": message,
+        "results": results,
+        "last_update": current_time
+    })
+    
+    with open(status_file, "w") as f:
+        json.dump(data, f)
+        
+    return jsonify(data)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True) 

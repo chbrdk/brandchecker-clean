@@ -21,6 +21,13 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    proxy: {
+      '/api/backend': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/backend/, ''),
+      },
+    },
   },
   build: {
     outDir: '../../dist-app',

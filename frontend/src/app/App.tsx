@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrandCheckerChat } from '../components/templates/BrandCheckerChat';
 import type { ChatMessage } from '../components/templates/BrandCheckerChat';
+import { ProgressBar } from '../components/atoms/ProgressBar';
+import { AnalysisResults } from '../components/molecules/AnalysisResults';
 import './App.css';
 
 /**
@@ -21,6 +23,13 @@ function App() {
   ]);
 
   const [pendingFiles, setPendingFiles] = React.useState<File[]>([]);
+  const [analysisStatus, setAnalysisStatus] = React.useState<{
+    fileId: string;
+    status: 'pending' | 'processing' | 'completed' | 'error';
+    progress: number;
+    message: string;
+    results?: any;
+  } | null>(null);
 
   const handleSendMessage = async (content: string, files?: File[]) => {
     console.log('🔵 handleSendMessage called with:', { content, files: files?.map(f => f.name), pendingFilesCount: pendingFiles.length });
@@ -42,7 +51,7 @@ function App() {
     }
 
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       message: userContent,
       sender: 'user',
       senderName: 'You',
@@ -68,7 +77,7 @@ function App() {
       // Normale Chat-Antwort ohne Dateien
       setTimeout(() => {
         const aiResponse: ChatMessage = {
-          id: (Date.now() + 1).toString(),
+          id: `agent-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           message: 'Ich habe Ihre Nachricht erhalten und analysiere sie...',
           sender: 'agent',
           senderName: 'BrandChecker AI',
@@ -99,7 +108,7 @@ function App() {
     
     // Upload-Start-Nachricht
     const uploadStartMessage: ChatMessage = {
-      id: Date.now().toString(),
+      id: `upload-start-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       message: `📤 Lade ${files.length} Datei(en) hoch...`,
       sender: 'agent',
       senderName: 'BrandChecker AI',
@@ -162,7 +171,7 @@ function App() {
           messageContent += `Die Datei steht nun für die Analyse zur Verfügung.`;
 
           const successMessage: ChatMessage = {
-            id: (Date.now() + Math.random()).toString(),
+            id: `upload-success-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             message: messageContent,
             sender: 'agent',
             senderName: 'BrandChecker AI',
@@ -171,10 +180,14 @@ function App() {
           };
           console.log('💬 Creating success message:', successMessage);
           setMessages(prev => [...prev, successMessage]);
+
+          // Backend-Analyse starten
+          console.log('🔍 Starting backend analysis for:', result.original_filename);
+          await startBackendAnalysis(result);
         } else {
           // Fehler-Nachricht
           const errorMessage: ChatMessage = {
-            id: (Date.now() + Math.random()).toString(),
+            id: `upload-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             message: `❌ **Fehler beim Upload von ${file.name}:**\n\n${result.error || 'Unbekannter Fehler'}`,
             sender: 'agent',
             senderName: 'BrandChecker AI',
@@ -186,7 +199,7 @@ function App() {
       } catch (error) {
         // Network-Fehler
         const networkErrorMessage: ChatMessage = {
-          id: (Date.now() + Math.random()).toString(),
+          id: `upload-network-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           message: `🔌 **Netzwerk-Fehler beim Upload von ${file.name}:**\n\n${error instanceof Error ? error.message : 'Verbindung zum Upload-Service fehlgeschlagen'}`,
           sender: 'agent',
           senderName: 'BrandChecker AI',
@@ -196,6 +209,215 @@ function App() {
         setMessages(prev => [...prev, networkErrorMessage]);
       }
     }
+  };
+
+  const startBackendAnalysis = async (uploadResult: any) => {
+    try {
+      console.log('🔍 Sending file to backend for analysis:', uploadResult.relative_path);
+      
+      // Analyse-Start-Nachricht mit Progress Bar
+      const analysisStartMessage: ChatMessage = {
+        id: `analysis-start-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        message: `**Analyse gestartet**\n\nVerarbeite ${uploadResult.original_filename}...`,
+        sender: 'agent',
+        senderName: 'BrandChecker AI',
+        avatarInitials: 'AI',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, analysisStartMessage]);
+
+      // Status-Tracking starten
+      setAnalysisStatus({
+        fileId: uploadResult.file_id,
+        status: 'processing',
+        progress: 0,
+        message: 'Initialisiere Analyse...'
+      });
+
+      // Backend-API aufrufen
+      const response = await fetch('http://localhost:8000/extract-all-path', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filepath: uploadResult.relative_path,
+          file_id: uploadResult.file_id,
+          original_filename: uploadResult.original_filename
+        }),
+        mode: 'cors',
+      });
+
+      console.log('📡 Backend analysis response status:', response.status);
+      const analysisResult = await response.json();
+      console.log('📦 Backend analysis result:', analysisResult);
+
+      if (response.ok && analysisResult.success) {
+        // Status-Polling starten
+        startStatusPolling(uploadResult.file_id);
+      } else {
+        // Analyse-Fehler
+        setAnalysisStatus({
+          fileId: uploadResult.file_id,
+          status: 'error',
+          progress: 0,
+          message: analysisResult.error || 'Unbekannter Fehler'
+        });
+        
+        const analysisErrorMessage: ChatMessage = {
+          id: `analysis-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          message: `**Analyse-Fehler**\n\nFehler bei der Verarbeitung von ${uploadResult.original_filename}:\n\n${analysisResult.error || 'Unbekannter Fehler'}`,
+          sender: 'agent',
+          senderName: 'BrandChecker AI',
+          avatarInitials: 'AI',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, analysisErrorMessage]);
+      }
+    } catch (error) {
+      console.error('❌ Backend analysis error:', error);
+      
+      // Network-Fehler
+      setAnalysisStatus({
+        fileId: uploadResult.file_id,
+        status: 'error',
+        progress: 0,
+        message: 'Netzwerk-Fehler'
+      });
+      
+      const networkErrorMessage: ChatMessage = {
+        id: `analysis-network-error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        message: `**Netzwerk-Fehler**\n\nVerbindung zum Analyse-Service fehlgeschlagen:\n\n${error instanceof Error ? error.message : 'Unbekannter Netzwerk-Fehler'}`,
+        sender: 'agent',
+        senderName: 'BrandChecker AI',
+        avatarInitials: 'AI',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, networkErrorMessage]);
+    }
+  };
+
+  const startStatusPolling = (fileId: string) => {
+    const pollInterval = setInterval(async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/analysis-status/${fileId}`, {
+          method: 'GET',
+          mode: 'cors',
+        });
+
+        if (response.ok) {
+          const statusData = await response.json();
+          console.log('📊 Status update:', statusData);
+          
+          setAnalysisStatus({
+            fileId: statusData.file_id,
+            status: statusData.status,
+            progress: statusData.progress,
+            message: statusData.message,
+            results: statusData.results
+          });
+
+          // Wenn Analyse abgeschlossen, Polling stoppen
+          if (statusData.status === 'completed' || statusData.status === 'error') {
+            clearInterval(pollInterval);
+            
+            if (statusData.status === 'completed') {
+              // Extraktionsdaten parsen und formatieren
+              const results = statusData.results;
+              let resultsMessage = `**Extraktion abgeschlossen**\n\nDie Datei wurde erfolgreich verarbeitet.\n\n`;
+              
+              if (results && results.extraction_data) {
+                const extractionData = results.extraction_data;
+                const summary = results.summary;
+                
+                // Zusammenfassung der extrahierten Elemente
+                resultsMessage += `**Extrahierte Elemente:**\n`;
+                resultsMessage += `- Farben: ${summary.total_colors}\n`;
+                resultsMessage += `- Schriftarten: ${summary.total_fonts}\n`;
+                resultsMessage += `- Seiten: ${summary.total_pages}\n`;
+                resultsMessage += `- Bilder: ${summary.total_images}\n`;
+                resultsMessage += `- Vektoren: ${summary.total_vectors}\n`;
+                resultsMessage += `- Farbraum: ${summary.primary_color_space}\n`;
+                resultsMessage += `- Farbmanagement: ${summary.color_management_strategy}\n\n`;
+                
+                // Farb-Analyse
+                if (extractionData.color_analysis && extractionData.color_analysis.colors) {
+                  const colors = extractionData.color_analysis.colors.slice(0, 5); // Top 5 Farben
+                  resultsMessage += `**Hauptfarben:**\n`;
+                  colors.forEach((color: any, index: number) => {
+                    resultsMessage += `${index + 1}. ${color.hex} (${color.usage_percentage.toFixed(1)}%)\n`;
+                  });
+                  resultsMessage += `\n`;
+                }
+                
+                // Font-Analyse
+                if (extractionData.font_analysis && extractionData.font_analysis.fonts) {
+                  const fonts = extractionData.font_analysis.fonts.slice(0, 3); // Top 3 Fonts
+                  resultsMessage += `**Hauptschriftarten:**\n`;
+                  fonts.forEach((font: any, index: number) => {
+                    resultsMessage += `${index + 1}. ${font.name} (${font.size}pt, ${font.usage_count}x)\n`;
+                  });
+                  resultsMessage += `\n`;
+                }
+                
+                // Layout-Analyse
+                if (extractionData.layout_analysis && extractionData.layout_analysis.alignment_analysis) {
+                  const alignment = extractionData.layout_analysis.alignment_analysis.alignment_counts;
+                  resultsMessage += `**Textausrichtung:**\n`;
+                  resultsMessage += `- Links: ${alignment.left || 0}\n`;
+                  resultsMessage += `- Rechts: ${alignment.right || 0}\n`;
+                  resultsMessage += `- Zentriert: ${alignment.center || 0}\n`;
+                  resultsMessage += `- Blocksatz: ${alignment.justified || 0}\n\n`;
+                }
+                
+                // Font-Insights
+                if (extractionData.font_insights && extractionData.font_insights.font_families) {
+                  resultsMessage += `**Font-Familien:** ${extractionData.font_insights.font_families.count}\n`;
+                  if (extractionData.font_insights.most_used_font) {
+                    resultsMessage += `**Häufigste Schriftart:** ${extractionData.font_insights.most_used_font.name}\n`;
+                  }
+                  resultsMessage += `\n`;
+                }
+                
+                // Verarbeitungszeit
+                resultsMessage += `**Verarbeitungszeit:** ${results.processing_time}\n`;
+                resultsMessage += `**Datei:** ${results.original_filename}`;
+              } else {
+                resultsMessage += `**Status:** Erfolgreich\n`;
+                resultsMessage += `**Fortschritt:** 100%\n`;
+                resultsMessage += `**Verarbeitungszeit:** ${statusData.message}`;
+              }
+              
+              const analysisSuccessMessage: ChatMessage = {
+                id: `analysis-success-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                message: resultsMessage,
+                sender: 'agent',
+                senderName: 'BrandChecker AI',
+                avatarInitials: 'AI',
+                timestamp: new Date(),
+                messageType: 'extraction-results',
+                messageData: results
+              };
+              setMessages(prev => [...prev, analysisSuccessMessage]);
+            }
+            
+            // Status nach 3 Sekunden zurücksetzen
+            setTimeout(() => {
+              setAnalysisStatus(null);
+            }, 3000);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Status polling error:', error);
+        clearInterval(pollInterval);
+      }
+    }, 2000); // Alle 2 Sekunden pollen
+
+    // Timeout nach 60 Sekunden
+    setTimeout(() => {
+      clearInterval(pollInterval);
+      setAnalysisStatus(null);
+    }, 60000);
   };
 
   // Debug: Log current state
@@ -211,6 +433,52 @@ function App() {
         onSendMessage={handleSendMessage}
         onFilesUpload={handleFilesUpload}
       />
+      
+      {/* Analysis Status Progress Bar */}
+      {analysisStatus && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: 'var(--color-background)',
+          border: '1px solid var(--color-grey-800)',
+          borderRadius: 'var(--border-radius-md)',
+          padding: 'var(--space-4)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          zIndex: 1000,
+          minWidth: '300px',
+          maxWidth: '500px'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)'
+          }}>
+            <div style={{
+              fontSize: 'var(--font-size-sm)',
+              fontWeight: 'var(--font-weight-semibold)',
+              color: 'var(--color-text-primary)'
+            }}>
+              Analyse läuft...
+            </div>
+            <ProgressBar
+              value={analysisStatus.progress}
+              variant="linear"
+              size="md"
+              showPercentage={true}
+              color={analysisStatus.status === 'error' ? 'error' : 'primary'}
+            />
+            <div style={{
+              fontSize: 'var(--font-size-xs)',
+              color: 'var(--color-text-secondary)',
+              textAlign: 'center'
+            }}>
+              {analysisStatus.message}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

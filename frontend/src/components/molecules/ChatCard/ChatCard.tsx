@@ -1,9 +1,11 @@
 import { Typography } from '../../atoms/Typography';
+import { Avatar } from '../../atoms/Avatar';
 import { Score } from '../../atoms/Score';
 import { TrafficLight } from '../../atoms/TrafficLight';
 import { Chart } from '../../atoms/Chart';
 import { RecommendationList } from '../../atoms/RecommendationList';
 import { ResultCard } from '../../atoms/ResultCard';
+import { AnalysisResults } from '../AnalysisResults';
 import type { AnalysisResult } from '../../atoms/ResultCard';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -13,7 +15,7 @@ import './ChatCard.css';
 /**
  * Chat Message Type
  */
-export type ChatMessageType = 'text' | 'score' | 'analysis' | 'chart' | 'recommendations' | 'result-card';
+export type ChatMessageType = 'text' | 'score' | 'analysis' | 'chart' | 'recommendations' | 'result-card' | 'analysis-results' | 'extraction-results';
 
 /**
  * Chat Message Data
@@ -220,6 +222,136 @@ export const ChatCard = ({
           </div>
         );
 
+      case 'analysis-results':
+        const analysisResultsData = messageData;
+        return (
+          <div className="chat-card__rich-content chat-card__analysis-results">
+            <AnalysisResults results={analysisResultsData} />
+          </div>
+        );
+
+      case 'extraction-results':
+        const extractionResultsData = messageData;
+        return (
+          <div className="chat-card__rich-content chat-card__extraction-results">
+            <div style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-grey-800)',
+              borderRadius: 'var(--border-radius-md)',
+              padding: 'var(--space-4)',
+              margin: 'var(--space-2) 0'
+            }}>
+              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
+                Extraktionsergebnisse
+              </Typography>
+              
+              {extractionResultsData.extraction_data && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                  {/* Zusammenfassung */}
+                  {extractionResultsData.summary && (
+                    <div>
+                      <Typography variant="body" size="xs" weight="semibold" color="primary">
+                        Zusammenfassung
+                      </Typography>
+                      <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', 
+                        gap: 'var(--space-2)',
+                        marginTop: 'var(--space-2)'
+                      }}>
+                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_colors}</Typography>
+                          <Typography variant="caption" size="xs" color="secondary">Farben</Typography>
+                        </div>
+                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_fonts}</Typography>
+                          <Typography variant="caption" size="xs" color="secondary">Fonts</Typography>
+                        </div>
+                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_pages}</Typography>
+                          <Typography variant="caption" size="xs" color="secondary">Seiten</Typography>
+                        </div>
+                        <div style={{ textAlign: 'center', padding: 'var(--space-2)', backgroundColor: 'var(--color-background)', borderRadius: 'var(--border-radius-sm)' }}>
+                          <Typography variant="body" size="sm" weight="semibold">{extractionResultsData.summary.total_images}</Typography>
+                          <Typography variant="caption" size="xs" color="secondary">Bilder</Typography>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Hauptfarben */}
+                  {extractionResultsData.extraction_data.color_analysis?.colors && (
+                    <div>
+                      <Typography variant="body" size="xs" weight="semibold" color="primary">
+                        Hauptfarben
+                      </Typography>
+                      <div style={{ 
+                        display: 'flex', 
+                        gap: 'var(--space-2)', 
+                        marginTop: 'var(--space-2)',
+                        flexWrap: 'wrap'
+                      }}>
+                        {extractionResultsData.extraction_data.color_analysis.colors.slice(0, 5).map((color: any, index: number) => (
+                          <div key={index} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 'var(--space-1)',
+                            padding: 'var(--space-1) var(--space-2)',
+                            backgroundColor: 'var(--color-background)',
+                            borderRadius: 'var(--border-radius-sm)',
+                            border: '1px solid var(--color-grey-800)'
+                          }}>
+                            <div style={{
+                              width: '16px',
+                              height: '16px',
+                              backgroundColor: color.hex,
+                              borderRadius: 'var(--border-radius-sm)',
+                              border: '1px solid var(--color-grey-800)'
+                            }} />
+                            <Typography variant="caption" size="xs">
+                              {color.hex}
+                            </Typography>
+                            <Typography variant="caption" size="xs" color="secondary">
+                              ({color.usage_percentage.toFixed(1)}%)
+                            </Typography>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Hauptschriftarten */}
+                  {extractionResultsData.extraction_data.font_analysis?.fonts && (
+                    <div>
+                      <Typography variant="body" size="xs" weight="semibold" color="primary">
+                        Hauptschriftarten
+                      </Typography>
+                      <div style={{ marginTop: 'var(--space-2)' }}>
+                        {extractionResultsData.extraction_data.font_analysis.fonts.slice(0, 3).map((font: any, index: number) => (
+                          <div key={index} style={{
+                            padding: 'var(--space-2)',
+                            backgroundColor: 'var(--color-background)',
+                            borderRadius: 'var(--border-radius-sm)',
+                            marginBottom: 'var(--space-1)',
+                            border: '1px solid var(--color-grey-800)'
+                          }}>
+                            <Typography variant="body" size="xs" weight="medium">
+                              {font.name}
+                            </Typography>
+                            <Typography variant="caption" size="xs" color="secondary">
+                              {font.size}pt • {font.usage_count}x verwendet
+                            </Typography>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -269,45 +401,55 @@ export const ChatCard = ({
               remarkPlugins={[remarkGfm]}
               components={{
                 p: ({ children }) => (
-                  <Typography variant="body" size="xs" color="primary">
+                  <div style={{ 
+                    fontSize: 'var(--font-size-xs)',
+                    lineHeight: 'var(--line-height-tight)',
+                    color: 'var(--color-text-primary)',
+                    fontFamily: 'var(--font-family-sans)',
+                    margin: 'var(--space-1) 0'
+                  }}>
                     {children}
-                  </Typography>
+                  </div>
                 ),
                 strong: ({ children }) => (
-                  <Typography variant="body" size="xs" weight="semibold" color="primary">
+                  <strong style={{ 
+                    fontSize: 'var(--font-size-xs)',
+                    lineHeight: 'var(--line-height-tight)',
+                    color: 'var(--color-text-primary)',
+                    fontFamily: 'var(--font-family-sans)',
+                    fontWeight: 'var(--font-weight-semibold)'
+                  }}>
                     {children}
-                  </Typography>
+                  </strong>
                 ),
                 code: ({ children }) => (
-                  <Typography 
-                    variant="body" 
-                    size="xs" 
-                    color="primary"
-                    style={{ 
-                      backgroundColor: 'var(--color-background-secondary)',
-                      padding: 'var(--space-1) var(--space-2)',
-                      borderRadius: 'var(--border-radius-sm)',
-                      fontFamily: 'var(--font-family-mono)',
-                      display: 'inline-block'
-                    }}
-                  >
+                  <code style={{ 
+                    fontSize: 'var(--font-size-xs)',
+                    lineHeight: 'var(--line-height-tight)',
+                    color: 'var(--color-text-primary)',
+                    fontFamily: 'var(--font-family-mono)',
+                    backgroundColor: 'var(--color-background-secondary)',
+                    padding: 'var(--space-1) var(--space-2)',
+                    borderRadius: 'var(--border-radius-sm)',
+                    display: 'inline-block'
+                  }}>
                     {children}
-                  </Typography>
+                  </code>
                 ),
                 pre: ({ children }) => (
-                  <div style={{ 
+                  <pre style={{ 
                     backgroundColor: 'var(--color-background-secondary)',
                     padding: 'var(--space-3)',
                     borderRadius: 'var(--border-radius-md)',
                     fontFamily: 'var(--font-family-mono)',
                     fontSize: 'var(--font-size-xs)',
+                    lineHeight: 'var(--line-height-tight)',
+                    color: 'var(--color-text-primary)',
                     overflow: 'auto',
                     margin: 'var(--space-2) 0'
                   }}>
-                    <Typography variant="body" size="xs" color="primary">
-                      {children}
-                    </Typography>
-                  </div>
+                    {children}
+                  </pre>
                 )
               }}
             >
