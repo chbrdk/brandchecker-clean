@@ -297,6 +297,46 @@ function App() {
     }
   };
 
+  // Send extraction results to n8n webhook
+  const sendToN8nWebhook = async (extractionResults: any) => {
+    try {
+      console.log('📤 Sending extraction results to n8n webhook...');
+      console.log('📤 Webhook URL: http://localhost:5680/webhook/analyze_n8n');
+      console.log('📤 Payload size:', JSON.stringify(extractionResults).length, 'bytes');
+      
+      const webhookUrl = 'http://localhost:5680/webhook/analyze_n8n';
+      
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(extractionResults)
+      });
+
+      console.log('📤 Response status:', response.status);
+      console.log('📤 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.ok) {
+        console.log('✅ Successfully sent extraction results to n8n webhook');
+        try {
+          const responseData = await response.json();
+          console.log('📦 n8n webhook response:', responseData);
+        } catch (e) {
+          console.log('📦 n8n webhook response (no JSON):', await response.text());
+        }
+      } else {
+        console.error('❌ Failed to send to n8n webhook:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('❌ Error details:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Error sending to n8n webhook:', error);
+      console.error('❌ Error details:', error.message);
+      console.error('❌ Error stack:', error.stack);
+    }
+  };
+
   const startStatusPolling = (fileId: string) => {
     const pollInterval = setInterval(async () => {
       try {
@@ -343,6 +383,10 @@ function App() {
                 messageData: results
               };
               setMessages(prev => [...prev, analysisSuccessMessage]);
+              
+              // Send complete extraction results to n8n webhook
+              console.log('🚀 About to send to n8n webhook, results:', results);
+              sendToN8nWebhook(results);
             }
             
             // Status nach 3 Sekunden zurücksetzen
