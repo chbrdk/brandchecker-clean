@@ -248,6 +248,21 @@ services:
     networks:
       - brandchecker_network
 
+  brandchecker-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: brandchecker-app
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8005:3001"  # App auf Port 8005
+    environment:
+      - NODE_ENV=development
+    volumes:
+      - ./frontend/src:/app/src:ro
+    networks:
+      - brandchecker_network
+
 volumes:
   brandchecker_n8n_data:
     driver: local

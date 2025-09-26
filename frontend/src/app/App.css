@@ -1,0 +1,27 @@
+/* Standalone BrandChecker App Styles */
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-sans);
+  background-color: var(--color-background-primary);
+  overflow: hidden;
+}
+
+/* Reset default margins/paddings */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
