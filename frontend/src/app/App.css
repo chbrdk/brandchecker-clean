@@ -7,7 +7,7 @@
   padding: 0;
   font-family: var(--font-family-sans);
   background-color: var(--color-background-primary);
-  overflow: hidden;
+  overflow: scroll;
 }
 
 /* Reset default margins/paddings */
@@ -20,6 +20,11 @@ html, body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+}
+
+/* Allgemeine Elemente mit 20% weißem Hintergrund */
+* {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 #root {

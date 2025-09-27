@@ -21,6 +21,7 @@ from color_analyzer import extract_colors_from_pdf_comprehensive
 from font_analyzer import extract_fonts_from_pdf_comprehensive, analyze_font_usage_patterns
 from layout_analyzer import extract_layout_from_pdf_comprehensive
 from image_analyzer import extract_images_from_pdf_comprehensive
+from vision_analyzer import analyze_image_with_gpt_vision, extract_and_analyze_images_from_pdf, analyze_single_image
 from vector_analyzer import extract_vector_graphics_from_pdf_comprehensive
 from enhanced_pdf_analyzer import analyze_pdf_with_multiple_libraries
 from custom_logo_detector import CustomLogoDetector
@@ -283,6 +284,60 @@ def extract_pdf_images():
         
     except Exception as e:
         logger.error(f"Error processing PDF for image analysis: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/analyze-images-vision', methods=['POST'])
+def analyze_images_with_vision():
+    """Analyze images from PDF using GPT Vision API for content, contrast, colors, depth, perspective, people, and mood"""
+    
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+    
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+    
+    # Check if it's a PDF or image file
+    filename_lower = file.filename.lower()
+    is_pdf = filename_lower.endswith('.pdf')
+    is_image = filename_lower.endswith(('.jpg', '.jpeg', '.png', '.gif', '.webp'))
+    
+    if not (is_pdf or is_image):
+        return jsonify({"error": "File must be a PDF or image (JPG, PNG, GIF, WebP)"}), 400
+    
+    try:
+        # Save uploaded file temporarily
+        filename = secure_filename(file.filename)
+        temp_dir = tempfile.mkdtemp()
+        temp_path = os.path.join(temp_dir, filename)
+        file.save(temp_path)
+        
+        logger.info(f"Processing file for GPT Vision analysis: {filename}")
+        
+        # Get OpenAI API key from request or environment
+        openai_api_key = request.form.get('openai_api_key') or os.getenv('OPENAI_API_KEY')
+        
+        if not openai_api_key:
+            return jsonify({"error": "OpenAI API key not provided. Please provide it in the request or set OPENAI_API_KEY environment variable."}), 400
+        
+        # Analyze based on file type
+        if is_pdf:
+            # Extract and analyze images from PDF
+            vision_analysis = extract_and_analyze_images_from_pdf(temp_path, openai_api_key)
+        else:
+            # Analyze single image
+            vision_analysis = analyze_single_image(temp_path, openai_api_key)
+        
+        # Clean up
+        shutil.rmtree(temp_dir)
+        
+        if "error" in vision_analysis:
+            return jsonify({"error": "Vision analysis error: " + str(vision_analysis["error"])}), 500
+        
+        return jsonify(vision_analysis)
+        
+    except Exception as e:
+        logger.error(f"Error in vision analysis: {e}")
         return jsonify({"error": str(e)}), 500
 
 @app.route('/extract-vectors', methods=['POST'])
@@ -1082,7 +1137,10 @@ def extract_pdf_all():
                 # Intelligent color analyses
                 "intelligent_color_analysis": intelligent_color_analysis,
                 "design_color_analysis": design_color_analysis,
-                "color_profile_analysis": color_profile_analysis
+                "color_profile_analysis": color_profile_analysis,
+                
+                # GPT Vision analysis
+                "vision_analysis": vision_analysis
             },
             "summary": {
                 "total_colors": color_analysis.get("total_colors", 0),
@@ -1093,7 +1151,9 @@ def extract_pdf_all():
                 "total_usage": color_analysis.get("total_usage", 0) + font_analysis.get("total_usage", 0),
                 "primary_color_space": intelligent_color_analysis.get("primary_color_space", "Unknown"),
                 "total_design_colors": design_color_analysis.get("total_design_colors", 0),
-                "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown")
+                "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown"),
+                "vision_analysis_available": vision_analysis is not None and "error" not in vision_analysis,
+                "vision_images_analyzed": vision_analysis.get("total_images", 0) if vision_analysis and "error" not in vision_analysis else 0
             }
         })
         
@@ -1122,8 +1182,13 @@ def extract_all_path():
         logger.info(f"Processing PDF for extraction: {filepath}")
         
         # === STANDARD EXTRACTIONS ===
-        # Extract colors (standard)
-        color_analysis = extract_colors_from_pdf_comprehensive(filepath)
+        # Extract colors (design-only, not from images)
+        try:
+            from color_analyzer import extract_design_colors_only
+            color_analysis = extract_design_colors_only(filepath)
+        except Exception as e:
+            logger.warning(f"Design colors extraction failed, falling back to comprehensive: {e}")
+            color_analysis = extract_colors_from_pdf_comprehensive(filepath)
         
         # Extract fonts
         font_analysis = extract_fonts_from_pdf_comprehensive(filepath)
@@ -1139,6 +1204,23 @@ def extract_all_path():
         
         # Get font insights (not scores, just patterns)
         font_insights = analyze_font_usage_patterns(font_analysis)
+        
+        # === GPT VISION ANALYSIS ===
+        vision_analysis = None
+        try:
+            # Check if OpenAI API key is available
+            openai_api_key = os.getenv('OPENAI_API_KEY')
+            logger.info(f"OpenAI API key available: {bool(openai_api_key)}")
+            if openai_api_key:
+                logger.info("Starting GPT Vision analysis...")
+                vision_analysis = extract_and_analyze_images_from_pdf(filepath, openai_api_key)
+                logger.info(f"GPT Vision analysis completed: {vision_analysis}")
+            else:
+                logger.warning("OpenAI API key not available, skipping vision analysis")
+                vision_analysis = {"error": "OpenAI API key not configured"}
+        except Exception as e:
+            logger.error(f"Vision analysis error: {e}")
+            vision_analysis = {"error": str(e)}
         
         # === INTELLIGENT COLOR EXTRACTIONS ===
         try:
@@ -1192,10 +1274,13 @@ def extract_all_path():
                 # Intelligent color extractions
                 "intelligent_color_analysis": intelligent_color_analysis,
                 "design_color_analysis": design_color_analysis,
-                "color_profile_analysis": color_profile_analysis
+                "color_profile_analysis": color_profile_analysis,
+                
+                # GPT Vision analysis
+                "vision_analysis": vision_analysis
             },
             "summary": {
-                "total_colors": color_analysis.get("total_colors", 0),
+                "total_colors": design_color_analysis.get("total_design_colors", 0) if "error" not in design_color_analysis else 0,
                 "total_fonts": font_analysis.get("total_fonts", 0),
                 "total_pages": layout_analysis.get("overall_stats", {}).get("total_pages", 0),
                 "total_images": image_analysis.get("overall_stats", {}).get("total_images", 0),
@@ -1203,7 +1288,9 @@ def extract_all_path():
                 "total_usage": color_analysis.get("total_usage", 0) + font_analysis.get("total_usage", 0),
                 "primary_color_space": intelligent_color_analysis.get("primary_color_space", "Unknown") if "error" not in intelligent_color_analysis else "Unknown",
                 "total_design_colors": design_color_analysis.get("total_design_colors", 0) if "error" not in design_color_analysis else 0,
-                "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown") if "error" not in color_profile_analysis else "Unknown"
+                "color_management_strategy": color_profile_analysis.get("overall_color_management", {}).get("color_management_strategy", "Unknown") if "error" not in color_profile_analysis else "Unknown",
+                "vision_analysis_available": vision_analysis is not None and "error" not in vision_analysis,
+                "vision_images_analyzed": vision_analysis.get("total_images", 0) if vision_analysis and "error" not in vision_analysis else 0
             },
             "processing_time": "Extraction completed",
             "status": "Extraction completed successfully"
@@ -1308,6 +1395,7 @@ def get_info():
             "extract_fonts": "/extract-fonts",
             "extract_layout": "/extract-layout",
             "extract_images": "/extract-images",
+            "analyze_images_vision": "/analyze-images-vision",
             "extract_vectors": "/extract-vectors",
             "database_stats": "/database/stats",
             "database_recent": "/database/recent",

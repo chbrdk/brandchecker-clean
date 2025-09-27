@@ -22,6 +22,10 @@ Ein modernes Frontend für Markenanalyse mit ChatGPT-ähnlicher Benutzeroberflä
 - **PDF Preview** Generierung mit `pdf2image`
 - **Base64 Encoding** für Browser-Transfer
 - **CORS** konfiguriert für Cross-Origin Requests
+- **GPT Vision Analysis** für intelligente Bildanalyse
+- **PDF Color Extraction** für Markenfarben-Analyse
+- **Font Analysis** für Typography-Bewertung
+- **Layout Analysis** für Design-Struktur
 
 ## 🏗️ Architektur
 
@@ -37,6 +41,8 @@ Ein modernes Frontend für Markenanalyse mit ChatGPT-ähnlicher Benutzeroberflä
 - **PyPDF2** & **pdf2image** für PDF-Verarbeitung
 - **Pillow** für Bildverarbeitung
 - **Flask-CORS** für Cross-Origin Support
+- **OpenAI Vision API** für intelligente Bildanalyse
+- **PyMuPDF** für erweiterte PDF-Verarbeitung
 
 ### Development Tools
 - **Storybook** für Component Development
@@ -59,7 +65,15 @@ brandchecker/
 │   │   └── stories/            # Storybook Stories
 │   ├── Dockerfile.app          # App Container
 │   └── vite.app.config.ts      # Vite Configuration
-├── upload-service/              # Python Backend
+├── python_app/                 # Python Backend
+│   ├── app.py                  # Flask Application
+│   ├── color_analyzer.py       # Farb-Extraktion
+│   ├── font_analyzer.py        # Font-Analyse
+│   ├── layout_analyzer.py      # Layout-Analyse
+│   ├── image_analyzer.py       # Bild-Extraktion
+│   ├── vision_analyzer.py      # GPT Vision Analyse
+│   └── requirements.txt        # Python Dependencies
+├── upload-service/              # Upload Service
 │   ├── app.py                  # Flask Application
 │   ├── requirements.txt        # Python Dependencies
 │   └── Dockerfile.upload       # Upload Service Container
@@ -127,6 +141,8 @@ python app.py
 | **Frontend App** | 8005 | React Application |
 | **Storybook** | 8004 | Component Library |
 | **Upload Service** | 8006 | File Upload API |
+| **Python Backend** | 8000 | PDF Analysis & GPT Vision |
+| **n8n Workflow** | 5680 | Automation & Webhooks |
 
 ## 📱 Verwendung
 
@@ -177,11 +193,112 @@ docker-compose build
 
 ## 📊 API Endpoints
 
-### Upload Service
+### Upload Service (Port 8006)
 - **POST** `/upload` - File Upload mit Preview-Generierung
 - **GET** `/health` - Service Health Check
 
-### Request/Response Format
+### Python Backend (Port 8000)
+- **POST** `/extract-all-path` - Komplette PDF-Analyse (Farben, Fonts, Layout, Bilder)
+- **POST** `/analyze-images-vision` - GPT Vision Bildanalyse
+- **GET** `/analysis-status/<file_id>` - Status der Analyse
+- **GET** `/health` - Service Health Check
+
+### GPT Vision Analysis
+Der `/analyze-images-vision` Endpoint analysiert Bilder mit OpenAI Vision API:
+
+**Unterstützte Formate:**
+- PDF (extrahiert alle Bilder)
+- JPG, PNG, GIF, WebP (Einzelbilder)
+
+**Analyse-Kriterien:**
+- **Inhalt & Komposition** - Hauptmotiv, Bildaufbau, dominante Elemente
+- **Kontrast & Helligkeit** - Kontrastlevel, Helligkeit, Belichtungsprobleme
+- **Farbgebung** - Dominante Farben, Farbtemperatur, Akzentfarben, Harmonie
+- **Fototiefe & Schärfe** - Schärfentiefe, Bildschärfe, Bokeh-Effekte
+- **Perspektive & Blickwinkel** - Kamerawinkel, Blickpunkt, räumliche Tiefe
+- **Personen & Emotionen** - Personen, Emotionen, Körpersprache
+- **Ausstrahlung & Stimmung** - Gesamtstimmung, Markenwerte, professioneller Eindruck
+- **Technische Qualität** - Bildqualität, technische Mängel, Eignung
+
+**Request Format:**
+```bash
+curl -X POST http://localhost:8000/analyze-images-vision \
+  -F "file=@document.pdf" \
+  -F "openai_api_key=your_api_key_here"
+```
+
+**Response Format:**
+```json
+{
+  "success": true,
+  "total_images": 2,
+  "image_analyses": [
+    {
+      "success": true,
+      "analysis": {
+        "content_analysis": {
+          "main_subject": "Produktfoto",
+          "composition": "Zentriert mit klarem Fokus",
+          "dominant_elements": ["Produkt", "Hintergrund"]
+        },
+        "contrast_analysis": {
+          "contrast_level": "high",
+          "brightness": "balanced",
+          "exposure_issues": []
+        },
+        "color_analysis": {
+          "dominant_colors": ["#FFFFFF", "#000000"],
+          "color_temperature": "neutral",
+          "accent_colors": ["#FF0000"],
+          "color_harmony": "good"
+        },
+        "depth_analysis": {
+          "depth_of_field": "shallow",
+          "sharpness": "sharp",
+          "bokeh_effects": true
+        },
+        "perspective_analysis": {
+          "camera_angle": "Frontal",
+          "viewpoint": "Eye-level",
+          "spatial_depth": "good"
+        },
+        "people_analysis": {
+          "people_present": false,
+          "emotions": [],
+          "body_language": "N/A"
+        },
+        "mood_analysis": {
+          "overall_mood": "Professionell und modern",
+          "brand_values": ["Qualität", "Innovation"],
+          "professional_impression": "high"
+        },
+        "technical_quality": {
+          "image_quality": "excellent",
+          "technical_issues": [],
+          "professional_suitability": "high"
+        },
+        "recommendations": {
+          "strengths": ["Klare Komposition", "Gute Farbharmonie"],
+          "improvements": ["Mehr Kontrast"],
+          "brand_alignment": "Sehr gut für Markenauftritt geeignet"
+        }
+      },
+      "metadata": {
+        "page_number": 1,
+        "image_index": 1,
+        "image_size": [800, 600],
+        "image_format": "PNG"
+      }
+    }
+  ],
+  "summary": {
+    "successful_analyses": 2,
+    "failed_analyses": 0
+  }
+}
+```
+
+### Upload Service Request/Response Format
 ```json
 {
   "success": true,
@@ -200,12 +317,13 @@ docker-compose build
 ## 🎯 Roadmap
 
 ### Geplant
-- [ ] **Backend API Integration** - HTTP Client, Error Handling
-- [ ] **Hauptseiten** - Dashboard, Chat, Upload, Results
+- [ ] **Frontend GPT Vision Integration** - Vision-Analyse in Chat-Interface
 - [ ] **React Router** - Navigation, Route Guards
 - [ ] **State Management** - Context/Redux für Chat States
 - [ ] **Error Handling** - Global Error Boundary, Toast Notifications
 - [ ] **Testing** - Unit Tests, Integration Tests, E2E Tests
+- [ ] **Batch Analysis** - Mehrere Bilder gleichzeitig analysieren
+- [ ] **Comparison Analysis** - Bildvergleich und Marken-Compliance
 
 ### In Entwicklung
 - [x] **Component Library** - Atomic Design Struktur
@@ -213,6 +331,9 @@ docker-compose build
 - [x] **File Upload** - Secure Upload mit Preview
 - [x] **Chat Interface** - ChatGPT-ähnliche UI
 - [x] **Docker Setup** - Multi-Container Environment
+- [x] **Backend API Integration** - PDF-Analyse, Farb-Extraktion, Font-Analyse
+- [x] **GPT Vision Analysis** - Intelligente Bildanalyse mit OpenAI
+- [x] **n8n Integration** - Workflow-Automatisierung
 
 ## 🤝 Contributing
 

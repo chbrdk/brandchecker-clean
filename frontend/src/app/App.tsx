@@ -31,6 +31,14 @@ function App() {
     results?: any;
   } | null>(null);
 
+  const [visionAnalysisStatus, setVisionAnalysisStatus] = React.useState<{
+    fileId: string;
+    status: 'pending' | 'processing' | 'completed' | 'error';
+    progress: number;
+    message: string;
+    results?: any;
+  } | null>(null);
+
   const handleSendMessage = async (content: string, files?: File[]) => {
     console.log('🔵 handleSendMessage called with:', { content, files: files?.map(f => f.name), pendingFilesCount: pendingFiles.length });
     
@@ -297,6 +305,89 @@ function App() {
     }
   };
 
+  // Start GPT Vision analysis
+  const startVisionAnalysis = async (filepath: string, originalFilename: string) => {
+    try {
+      console.log('🔍 Starting GPT Vision analysis...');
+      console.log('🔍 Filepath:', filepath);
+      console.log('🔍 Original filename:', originalFilename);
+      
+      const fileId = `vision-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      setVisionAnalysisStatus({
+        fileId,
+        status: 'processing',
+        progress: 0,
+        message: 'GPT Vision Analyse wird gestartet...'
+      });
+
+      // Create a proper file from the filepath
+      const response = await fetch(`http://localhost:8006/uploads/${originalFilename}`);
+      if (!response.ok) {
+        throw new Error('File not found for vision analysis');
+      }
+      
+      const fileBlob = await response.blob();
+      const file = new File([fileBlob], originalFilename, { type: 'application/pdf' });
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      // Don't send API key from frontend - let backend use its environment variable
+      
+      const visionResponse = await fetch('http://localhost:8000/analyze-images-vision', {
+        method: 'POST',
+        body: formData,
+        mode: 'cors',
+      });
+
+      if (visionResponse.ok) {
+        const visionResults = await visionResponse.json();
+        console.log('✅ Vision analysis completed:', visionResults);
+        
+        setVisionAnalysisStatus({
+          fileId,
+          status: 'completed',
+          progress: 100,
+          message: 'GPT Vision Analyse abgeschlossen',
+          results: visionResults
+        });
+
+        // Create vision analysis message
+        const visionMessage: ChatMessage = {
+          id: `vision-analysis-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          message: `**GPT Vision Analyse abgeschlossen**\n\nDie Bilder wurden erfolgreich analysiert.`,
+          sender: 'agent',
+          senderName: 'BrandChecker AI',
+          avatarInitials: 'AI',
+          timestamp: new Date(),
+          messageType: 'vision-results',
+          messageData: visionResults
+        };
+        setMessages(prev => [...prev, visionMessage]);
+        
+        // Clear status after 3 seconds
+        setTimeout(() => {
+          setVisionAnalysisStatus(null);
+        }, 3000);
+      } else {
+        const errorData = await visionResponse.json();
+        throw new Error(`Vision analysis failed: ${errorData.error || visionResponse.status}`);
+      }
+    } catch (error: any) {
+      console.error('❌ Vision analysis error:', error);
+      setVisionAnalysisStatus({
+        fileId: 'error',
+        status: 'error',
+        progress: 0,
+        message: `Vision analysis error: ${error.message}`
+      });
+      
+      setTimeout(() => {
+        setVisionAnalysisStatus(null);
+      }, 5000);
+    }
+  };
+
   // Send extraction results to n8n webhook
   const sendToN8nWebhook = async (extractionResults: any) => {
     try {
@@ -370,6 +461,11 @@ function App() {
               if (results && results.extraction_data) {
                 const summary = results.summary;
                 resultsMessage += `\n\n**Extrahierte Elemente:** ${summary.total_colors} Farben, ${summary.total_fonts} Fonts, ${summary.total_pages} Seiten, ${summary.total_images} Bilder`;
+                
+                // Add vision analysis info if available
+                if (summary.vision_analysis_available && summary.vision_images_analyzed > 0) {
+                  resultsMessage += `\n\n**GPT Vision Analyse:** ${summary.vision_images_analyzed} Bilder analysiert`;
+                }
               }
               
               const analysisSuccessMessage: ChatMessage = {
@@ -384,9 +480,9 @@ function App() {
               };
               setMessages(prev => [...prev, analysisSuccessMessage]);
               
-              // Send complete extraction results to n8n webhook
-              console.log('🚀 About to send to n8n webhook, results:', results);
-              sendToN8nWebhook(results);
+                  // Send complete extraction results to n8n webhook
+                  console.log('🚀 About to send to n8n webhook, results:', results);
+                  sendToN8nWebhook(results);
             }
             
             // Status nach 3 Sekunden zurücksetzen
@@ -426,7 +522,7 @@ function App() {
       {analysisStatus && (
         <div style={{
           position: 'fixed',
-          bottom: '20px',
+          bottom: visionAnalysisStatus ? '120px' : '20px',
           left: '50%',
           transform: 'translateX(-50%)',
           backgroundColor: 'var(--color-background)',
@@ -463,6 +559,52 @@ function App() {
               textAlign: 'center'
             }}>
               {analysisStatus.message}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vision Analysis Status Progress Bar */}
+      {visionAnalysisStatus && (
+        <div style={{
+          position: 'fixed',
+          bottom: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          backgroundColor: 'var(--color-background)',
+          border: '1px solid var(--color-primary)',
+          borderRadius: 'var(--border-radius-md)',
+          padding: 'var(--space-4)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          zIndex: 1000,
+          minWidth: '300px',
+          maxWidth: '500px'
+        }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)'
+          }}>
+            <div style={{
+              fontSize: 'var(--font-size-sm)',
+              fontWeight: 'var(--font-weight-semibold)',
+              color: 'var(--color-primary)'
+            }}>
+              🔍 GPT Vision Analyse...
+            </div>
+            <ProgressBar
+              value={visionAnalysisStatus.progress}
+              variant="linear"
+              size="md"
+              showPercentage={true}
+              color={visionAnalysisStatus.status === 'error' ? 'error' : 'primary'}
+            />
+            <div style={{
+              fontSize: 'var(--font-size-xs)',
+              color: 'var(--color-text-secondary)',
+              textAlign: 'center'
+            }}>
+              {visionAnalysisStatus.message}
             </div>
           </div>
         </div>

@@ -95,3 +95,6 @@ export type {
   ResultCardVariant, 
   AnalysisResult 
 } from './ResultCard';
+
+export { Carousel } from './Carousel';
+export type { CarouselProps } from './Carousel';

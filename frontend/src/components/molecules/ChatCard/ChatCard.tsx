@@ -6,7 +6,9 @@ import { Chart } from '../../atoms/Chart';
 import { RecommendationList } from '../../atoms/RecommendationList';
 import { ResultCard } from '../../atoms/ResultCard';
 import { ColorSwatch } from '../../atoms/ColorSwatch';
+import { Carousel } from '../../atoms/Carousel';
 import { AnalysisResults } from '../AnalysisResults';
+import { VisionResults } from '../VisionResults';
 import type { AnalysisResult } from '../../atoms/ResultCard';
 import type { ColorData } from '../../atoms/ColorSwatch';
 import ReactMarkdown from 'react-markdown';
@@ -16,7 +18,7 @@ import './ChatCard.css';
 /**
  * Chat Message Type
  */
-export type ChatMessageType = 'text' | 'score' | 'analysis' | 'chart' | 'recommendations' | 'result-card' | 'analysis-results' | 'extraction-results';
+export type ChatMessageType = 'text' | 'score' | 'analysis' | 'chart' | 'recommendations' | 'result-card' | 'analysis-results' | 'extraction-results' | 'vision-results';
 
 /**
  * Chat Message Data
@@ -148,7 +150,7 @@ export const ChatCard = ({
           )}
           
           {/* Color Analysis with ColorSwatch */}
-          {extractionResultsData.extraction_data?.color_analysis?.colors && (
+          {extractionResultsData.extraction_data?.design_color_analysis?.design_colors && (
             <div style={{
               backgroundColor: 'var(--color-background-secondary)',
               border: '1px solid var(--color-grey-800)',
@@ -162,12 +164,15 @@ export const ChatCard = ({
               <Typography variant="body" size="xs" color="secondary" style={{ marginBottom: 'var(--space-3)' }}>
                 Hauptfarben aus dem PDF-Dokument
               </Typography>
-              <div style={{ 
-                display: 'flex', 
-                gap: 'var(--space-2)', 
-                flexWrap: 'wrap'
-              }}>
-                {extractionResultsData.extraction_data.color_analysis.colors.slice(0, 5).map((color: any, index: number) => {
+              <Carousel
+                itemsPerView={5}
+                showArrows={true}
+                showDots={true}
+                autoPlay={false}
+                loop={true}
+                onSlideChange={(index) => console.log('Color carousel slide changed:', index)}
+              >
+                {extractionResultsData.extraction_data.design_color_analysis.design_colors.map((color: any, index: number) => {
                   const colorData: ColorData = {
                     hex: color.hex,
                     name: color.name,
@@ -191,7 +196,27 @@ export const ChatCard = ({
                     />
                   );
                 })}
-              </div>
+              </Carousel>
+            </div>
+          )}
+          
+          {/* GPT Vision Analysis */}
+          {extractionResultsData.extraction_data?.vision_analysis && 
+           extractionResultsData.extraction_data.vision_analysis.success && (
+            <div style={{
+              backgroundColor: 'var(--color-background-secondary)',
+              border: '1px solid var(--color-primary)',
+              borderRadius: 'var(--border-radius-md)',
+              padding: 'var(--space-4)',
+              margin: 'var(--space-2) 0'
+            }}>
+              <Typography variant="h4" size="sm" weight="semibold" style={{ marginBottom: 'var(--space-3)' }}>
+                🔍 GPT Vision Analyse
+              </Typography>
+              <Typography variant="body" size="xs" color="secondary" style={{ marginBottom: 'var(--space-3)' }}>
+                Intelligente Bildanalyse mit OpenAI Vision
+              </Typography>
+              <VisionResults visionData={extractionResultsData.extraction_data.vision_analysis} />
             </div>
           )}
           
@@ -423,6 +448,13 @@ export const ChatCard = ({
           </div>
         );
 
+      case 'vision-results':
+        const visionResultsData = messageData as any;
+        return (
+          <div className="chat-card__rich-content chat-card__vision-results">
+            <VisionResults visionData={visionResultsData} />
+          </div>
+        );
 
       default:
         console.log('❌ Unknown messageType:', messageData.type);

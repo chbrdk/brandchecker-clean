@@ -416,7 +416,13 @@ def aggregate_colors(all_colors, color_sources):
         final_colors.append(final_color)
     
     # Sort by usage
-    final_colors.sort(key=lambda x: x["usage_count"], reverse=True)
+    def get_sort_key(color):
+        count = color.get("usage_count", 0)
+        if not isinstance(count, (int, float)):
+            return 0
+        return int(count)
+    
+    final_colors.sort(key=get_sort_key, reverse=True)
     
     # Create summary
     summary = {
@@ -653,8 +659,18 @@ def extract_design_colors_only(pdf_path):
                             design_colors.append(text_color)
                             color_sources["text_colors"].append(text_color)
         
+        # Debug: Log found colors before aggregation
+        logger.info(f"Found {len(design_colors)} design colors before aggregation")
+        for i, color in enumerate(design_colors[:5]):  # Log first 5 colors
+            logger.info(f"Color {i+1}: {color.get('hex', 'N/A')} - {color.get('name', 'N/A')} - {color.get('source', 'N/A')}")
+        
         # Aggregate and deduplicate colors
         aggregated_colors = aggregate_design_colors(design_colors)
+        
+        # Debug: Log aggregated colors
+        logger.info(f"After aggregation: {len(aggregated_colors)} colors")
+        for i, color in enumerate(aggregated_colors[:5]):  # Log first 5 colors
+            logger.info(f"Aggregated Color {i+1}: {color.get('hex', 'N/A')} - {color.get('name', 'N/A')} - {color.get('usage_count', 0)} uses")
         
         return {
             "design_colors": aggregated_colors,
@@ -667,13 +683,222 @@ def extract_design_colors_only(pdf_path):
         logger.error(f"Error in design-only color extraction: {e}")
         return {"error": str(e)}
 
+def is_valid_hex_color(hex_val):
+    """Check if hex color is valid and properly formatted"""
+    if not hex_val or not isinstance(hex_val, str):
+        return False
+    
+    # Remove # if present
+    hex_clean = hex_val.replace('#', '')
+    
+    # Check if it's a valid hex string (6 or 3 characters)
+    if len(hex_clean) not in [3, 6]:
+        return False
+    
+    # Check if all characters are valid hex
+    try:
+        int(hex_clean, 16)
+        return True
+    except ValueError:
+        return False
+
+def normalize_hex_color(hex_val):
+    """Normalize hex color to 6-digit format"""
+    if not hex_val:
+        return None
+    
+    # Remove # if present
+    hex_clean = hex_val.replace('#', '')
+    
+    # Convert 3-digit to 6-digit
+    if len(hex_clean) == 3:
+        hex_clean = ''.join([c*2 for c in hex_clean])
+    
+    return f"#{hex_clean.upper()}"
+
+def calculate_color_distance(rgb1, rgb2):
+    """Calculate Euclidean distance between two RGB colors"""
+    if not rgb1 or not rgb2:
+        return float('inf')
+    
+    # Ensure both are lists of integers
+    try:
+        if isinstance(rgb1, (list, tuple)) and len(rgb1) >= 3:
+            rgb1 = [int(rgb1[0]), int(rgb1[1]), int(rgb1[2])]
+        else:
+            return float('inf')
+            
+        if isinstance(rgb2, (list, tuple)) and len(rgb2) >= 3:
+            rgb2 = [int(rgb2[0]), int(rgb2[1]), int(rgb2[2])]
+        else:
+            return float('inf')
+    except (ValueError, TypeError, IndexError):
+        return float('inf')
+    
+    return sum((a - b) ** 2 for a, b in zip(rgb1, rgb2)) ** 0.5
+
+def group_similar_colors(colors, threshold=30):
+    """Group similar colors together based on RGB distance"""
+    if not colors:
+        return colors
+    
+    groups = []
+    used_indices = set()
+    
+    for i, color in enumerate(colors):
+        if i in used_indices:
+            continue
+            
+        # Start a new group with this color
+        group = [color]
+        used_indices.add(i)
+        
+        # Find similar colors
+        for j, other_color in enumerate(colors):
+            if j in used_indices or i == j:
+                continue
+                
+            # Calculate distance between colors
+            rgb1 = color.get('rgb', [])
+            rgb2 = other_color.get('rgb', [])
+            distance = calculate_color_distance(rgb1, rgb2)
+            
+            # Ensure distance is a number and threshold is a number
+            if not isinstance(distance, (int, float)):
+                distance = float('inf')
+            if not isinstance(threshold, (int, float)):
+                threshold = 30
+            
+            if distance <= threshold:
+                group.append(other_color)
+                used_indices.add(j)
+        
+        # Merge colors in the group
+        if len(group) > 1:
+            merged_color = merge_color_group(group)
+            groups.append(merged_color)
+        else:
+            groups.append(color)
+    
+    return groups
+
+def merge_color_group(color_group):
+    """Merge a group of similar colors into one representative color"""
+    if not color_group:
+        return None
+    
+    if len(color_group) == 1:
+        return color_group[0]
+    
+    # Calculate weighted average RGB based on usage count
+    def get_usage_count_safe(color):
+        count = color.get('usage_count', 1)
+        if not isinstance(count, (int, float)):
+            return 1
+        return int(count)
+    
+    total_count = sum(get_usage_count_safe(color) for color in color_group)
+    
+    if total_count == 0:
+        total_count = len(color_group)
+    
+    weighted_rgb = [0, 0, 0]
+    total_weight = 0
+    
+    for color in color_group:
+        rgb = color.get('rgb', [0, 0, 0])
+        weight = get_usage_count_safe(color)
+        
+        # Ensure rgb is a list of integers
+        if isinstance(rgb, (list, tuple)) and len(rgb) >= 3:
+            rgb = [int(rgb[0]), int(rgb[1]), int(rgb[2])]
+        else:
+            rgb = [0, 0, 0]
+        
+        # Ensure weight is an integer
+        if not isinstance(weight, (int, float)):
+            weight = 1
+        weight = int(weight)
+        
+        for i in range(3):
+            weighted_rgb[i] += rgb[i] * weight
+        total_weight += weight
+    
+    # Calculate average RGB
+    avg_rgb = [round(weighted_rgb[i] / total_weight) for i in range(3)]
+    
+    # Use the most common color as base
+    def get_usage_count(color):
+        count = color.get('usage_count', 1)
+        if not isinstance(count, (int, float)):
+            return 1
+        return int(count)
+    
+    base_color = max(color_group, key=get_usage_count)
+    
+    # Create merged color
+    merged_color = base_color.copy()
+    merged_color['rgb'] = avg_rgb
+    merged_color['hex'] = normalize_hex_color(rgb_to_hex(*avg_rgb))
+    merged_color['usage_count'] = total_count
+    def get_usage_percentage(color):
+        percentage = color.get('usage_percentage', 0)
+        if not isinstance(percentage, (int, float)):
+            return 0
+        return float(percentage)
+    
+    merged_color['usage_percentage'] = sum(get_usage_percentage(color) for color in color_group)
+    merged_color['merged_from'] = len(color_group)
+    merged_color['merged_colors'] = [c.get('hex', '') for c in color_group]
+    
+    return merged_color
+
 def aggregate_design_colors(design_colors):
     """Aggregate and deduplicate design colors with improved precision data"""
     
+    logger.info(f"Starting aggregation of {len(design_colors)} design colors")
+    
+    # Step 1: Filter valid colors
+    valid_colors = []
+    for i, color in enumerate(design_colors):
+        if i < 5:  # Debug first 5 colors
+            logger.info(f"Processing color {i+1}: {color}")
+        
+        if not color or not isinstance(color, dict):
+            logger.warning(f"Skipping invalid color: {color}")
+            continue
+            
+        hex_val = color.get("hex")
+        if not hex_val:
+            logger.warning(f"Skipping color without hex value: {color}")
+            continue
+        
+        # Validate and normalize hex color
+        if not is_valid_hex_color(hex_val):
+            logger.warning(f"Skipping invalid hex color: {hex_val}")
+            continue
+        
+        # Normalize hex color
+        normalized_hex = normalize_hex_color(hex_val)
+        if normalized_hex:
+            color['hex'] = normalized_hex
+            valid_colors.append(color)
+        else:
+            logger.warning(f"Failed to normalize hex color: {hex_val}")
+    
+    logger.info(f"After validation: {len(valid_colors)} valid colors")
+    
+    # Step 2: Group similar colors
+    grouped_colors = group_similar_colors(valid_colors, threshold=25)
+    logger.info(f"After grouping: {len(grouped_colors)} color groups")
+    
+    # Step 3: Traditional aggregation by exact hex match
     color_groups = {}
     
-    for color in design_colors:
-        hex_val = color["hex"]
+    for color in grouped_colors:
+        hex_val = color.get("hex")
+        if not hex_val:
+            continue
         if hex_val not in color_groups:
             color_groups[hex_val] = {
                 "rgb": color["rgb"],
@@ -692,7 +917,11 @@ def aggregate_design_colors(design_colors):
                 "correction_distance": color.get("correction_distance")
             }
         
-        color_groups[hex_val]["count"] += 1
+        # Add the usage_count from the grouped color
+        color_usage_count = color.get("usage_count", 1)
+        if not isinstance(color_usage_count, (int, float)):
+            color_usage_count = 1
+        color_groups[hex_val]["count"] += int(color_usage_count)
         color_groups[hex_val]["sources"].add(color["source"])
         color_groups[hex_val]["pages"].add(color["page"])
         color_groups[hex_val]["descriptions"].append(color.get("description", ""))
@@ -726,7 +955,13 @@ def aggregate_design_colors(design_colors):
         })
     
     # Sort by usage count
-    aggregated.sort(key=lambda x: x["usage_count"], reverse=True)
+    def get_sort_key(color):
+        count = color.get("usage_count", 0)
+        if not isinstance(count, (int, float)):
+            return 0
+        return int(count)
+    
+    aggregated.sort(key=get_sort_key, reverse=True)
     
     return aggregated 
 
@@ -1304,11 +1539,19 @@ def aggregate_gray_colors(gray_colors):
     
     return list(color_groups.values()) 
 
-def calculate_color_distance(color1_rgb, color2_rgb):
-    """Calculate Euclidean distance between two RGB colors"""
+def calculate_color_distance_with_normalization(color1_rgb, color2_rgb):
+    """Calculate Euclidean distance between two RGB colors with normalization"""
     try:
-        r1, g1, b1 = color1_rgb
-        r2, g2, b2 = color2_rgb
+        # Ensure both are lists of integers
+        if isinstance(color1_rgb, (list, tuple)) and len(color1_rgb) >= 3:
+            r1, g1, b1 = [int(color1_rgb[0]), int(color1_rgb[1]), int(color1_rgb[2])]
+        else:
+            return float('inf'), 1.0
+            
+        if isinstance(color2_rgb, (list, tuple)) and len(color2_rgb) >= 3:
+            r2, g2, b2 = [int(color2_rgb[0]), int(color2_rgb[1]), int(color2_rgb[2])]
+        else:
+            return float('inf'), 1.0
         
         # Calculate Euclidean distance
         distance = ((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) ** 0.5
@@ -1424,7 +1667,7 @@ def compare_colors_with_bosch(extracted_colors, bosch_colors=None):
                     continue
                 
                 # Calculate distance
-                distance, normalized_distance = calculate_color_distance(color_rgb, bosch_rgb)
+                distance, normalized_distance = calculate_color_distance_with_normalization(color_rgb, bosch_rgb)
                 
                 # Store match if within reasonable distance (normalized < 0.3)
                 if normalized_distance < 0.3:
